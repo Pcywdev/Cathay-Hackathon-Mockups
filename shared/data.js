@@ -45,6 +45,14 @@ window.DATA = {
     milesUnit: "miles",
     back: "Back",
     done: "Done",
-    missionComplete: "Boarding mission complete!"
+    missionComplete: "Boarding mission complete!",
+    tripTitle: "Mei's trip",
+    startMission: "Start mission",
+    readStory: "Read my trip story",
+    nextStop: "Next stop",
+    gate: "Gate",
+    seat: "Seat",
+    boardingPass: "Boarding pass",
+    locked: "Locked"
   }
 };

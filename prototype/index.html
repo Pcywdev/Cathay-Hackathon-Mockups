@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#03110d">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#EAF1F3">
   <title>Little Explorers</title>
   <link rel="stylesheet" href="../shared/fonts.css">
   <link rel="stylesheet" href="../shared/tokens.css">
@@ -14,7 +14,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     html, body { overflow-x: hidden; }
-    h1, h2, p, ul, figure { margin: 0; }
+    h1, h2, p, ul, dl, dd, figure { margin: 0; }
     ul { padding: 0; list-style: none; }
     a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
 
@@ -36,130 +36,126 @@
     @media (prefers-reduced-motion: reduce) { .slide-fwd, .slide-back { animation: none; } }
 
     /* Subtle pressed state on everything tappable */
-    .story-card, .btn-start, .btn-back, .btn-done, .switch { transition: transform .1s ease, background .2s ease; }
-    :is(.story-card, .btn-start, .btn-back, .btn-done, .switch):active { transform: scale(.97); }
+    .story-row, .btn-mission, .btn-back, .btn-done, .switch { transition: transform .1s ease, background .2s ease; }
+    :is(.story-row, .btn-mission, .btn-back, .btn-done, .switch):active { transform: scale(.97); }
     .btn-back:active { background: var(--color-border); }
-    [data-screen="home"]:not([hidden]) { display: flex; flex-direction: column; gap: 10px; }
-
-    /* Night-city hero background, fading into the page */
-    [data-screen="home"] { position: relative; }
-    [data-screen="home"] > * { position: relative; z-index: 1; }
-    [data-screen="home"] > .hero-bg {
-      position: absolute; z-index: 0; top: 0; left: 0; width: 100%; height: calc(340px + env(safe-area-inset-top, 0px));
-      -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
-              mask-image: linear-gradient(to bottom, #000 55%, transparent);
+    /* ===== Home ===== */
+    [data-screen="home"] {
+      padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+      padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
     }
+    [data-screen="home"]:not([hidden]) { display: flex; flex-direction: column; gap: var(--space-4); min-height: 100svh; }
+    [data-screen="home"] .concept { margin-top: auto; }
 
-    /* Header */
-    .hero { display: flex; flex-direction: column; gap: var(--space-2); padding-top: var(--space-2); }
-    .member-name { font-size: var(--fs-xl); font-weight: 800; color: var(--text-on-primary); text-shadow: 0 2px 8px rgba(0,0,0,.4); }
-    .mode-bar {
-      display: flex; align-items: center; gap: var(--space-3);
-      padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
-      border-radius: var(--radius-pill);
-      background: rgba(0, 70, 58, .78); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
-      color: var(--text-on-primary); font-size: var(--fs-md); font-weight: 700;
-    }
-    .mode-star { flex: none; }
-    #mode-label { flex: 1; }
+    .flight-data { font-family: var(--font-mono); font-size: var(--fs-flight); line-height: var(--lh-flight); font-weight: 500; letter-spacing: var(--tracking-flight); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .icon { flex: none; display: block; }
 
-    /* Toggle switch */
+    /* Header: Pip waving, trip name, junior mode */
+    .home-head { display: flex; align-items: center; gap: var(--space-3); }
+    .pip { flex: none; display: block; width: 64px; height: auto; }
+    .pip .body { fill: var(--paper); stroke: var(--jade); stroke-width: 3; stroke-linejoin: round; }
+    .pip .fold { fill: var(--jade-tint); stroke: var(--jade); stroke-width: 3; stroke-linejoin: round; }
+    .pip .cheek { fill: var(--miles); opacity: .4; }
+    .pip .eye, .pip .smile { fill: var(--ink); }
+    .pip .smile { fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; }
+    .pip .glint { fill: var(--paper); }
+    .pip .tick { fill: none; stroke: var(--jade); stroke-width: 2; stroke-linecap: round; }
+    .home-title { flex: 1; min-width: 0; }
+    .home-title h1 { font-family: var(--font-display); font-size: var(--fs-title); line-height: var(--lh-title); font-weight: 700; color: var(--ink); }
+    .route { color: var(--ink-soft); }
+    .mode { flex: none; display: flex; align-items: center; gap: var(--space-2); font-size: var(--fs-small); line-height: var(--lh-small); font-weight: 500; }
+
     .switch {
-      flex: none; position: relative; width: 56px; height: 32px; padding: 0; border: 0; cursor: pointer;
-      border-radius: var(--radius-pill); background: rgba(255,255,255,.28);
-      transition: background .2s ease; -webkit-tap-highlight-color: transparent;
+      flex: none; position: relative; width: 44px; height: 26px; padding: 0; border: 0; cursor: pointer;
+      border-radius: var(--radius-pill); background: var(--line); -webkit-tap-highlight-color: transparent;
     }
-    .switch .knob {
-      position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%;
-      background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s ease;
+    .switch .knob { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--paper); transition: transform .2s ease; }
+    .switch[aria-checked="true"] { background: var(--jade); }
+    .switch[aria-checked="true"] .knob { transform: translateX(18px); }
+    .switch:focus-visible { outline: 2px solid var(--jade); outline-offset: 2px; }
+
+    /* Boarding pass (hero). Notches are cut with a mask; the document shadow follows them via drop-shadow */
+    .pass-wrap { filter: drop-shadow(0 1px 2px rgba(29, 43, 51, .08)) drop-shadow(0 8px 24px rgba(29, 43, 51, .08)); }
+    .pass {
+      --stub: 96px; --notch: 10px; --tear-x: calc(100% - var(--stub) - 7px);
+      display: flex; background: var(--paper); border-radius: var(--radius-doc); overflow: hidden;
+      -webkit-mask:
+        radial-gradient(circle var(--notch) at var(--tear-x) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+        radial-gradient(circle var(--notch) at var(--tear-x) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+              mask:
+        radial-gradient(circle var(--notch) at var(--tear-x) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+        radial-gradient(circle var(--notch) at var(--tear-x) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
     }
-    .switch[aria-checked="true"] { background: var(--color-accent); }
-    .switch[aria-checked="true"] .knob { transform: translateX(24px); }
-    .switch:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    .pass-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4); }
+    .pass-code { color: var(--ink-soft); }
+    .pass-title { font-family: var(--font-display); font-size: var(--fs-heading); line-height: var(--lh-heading); font-weight: 700; color: var(--ink); }
+    .pass-route { display: flex; align-items: center; gap: var(--space-2); }
+    .airport { font-family: var(--font-mono); font-size: var(--fs-airport); line-height: var(--lh-airport); font-weight: 600; color: var(--ink); }
+    .route-line { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; color: var(--ink); }
+    .route-line::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 2px dashed var(--line); }
+    .route-line .icon { position: relative; background: var(--paper); padding: 0 4px; box-sizing: content-box; }
+    .pass-seat { display: flex; gap: var(--space-5); margin: 0; }
+    .pass-seat dt { font-size: var(--fs-small); line-height: var(--lh-small); font-weight: 500; color: var(--ink-soft); }
+    .pass-seat dd { margin: 0; color: var(--ink); }
+    .btn-mission {
+      display: flex; align-items: center; justify-content: center; height: 56px; border-radius: var(--radius-pill);
+      background: var(--jade); color: var(--paper); font-weight: 500;
+    }
+    .btn-mission:active { background: var(--jade-pressed); }
+    .pass-done { display: flex; align-items: center; gap: var(--space-2); height: 56px; font-weight: 500; color: var(--ink); }
+    .pass-done .icon { color: var(--jade); }
+    .tear { flex: none; width: 0; margin: var(--space-4) 6px; border-left: 2px dashed var(--line); }
+    .pass-stub {
+      flex: none; width: var(--stub); display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: var(--miles); color: var(--ink);
+    }
+    .stub-num { font-family: var(--font-display); font-size: var(--fs-display); line-height: var(--lh-display); font-weight: 800; }
+    .stub-unit { font-size: var(--fs-small); line-height: var(--lh-small); font-weight: 500; }
 
-    /* Junior mode off: dim the junior content */
-    /* Fade card contents, not cards, so the hero never shows through */
-    .miles-card, .story-card, .missions, .stamps { transition: filter .2s ease; }
-    :is(.miles-card, .story-card, .missions, .stamps) > * { transition: opacity .2s ease; }
-    .junior-off :is(.miles-card, .story-card, .missions, .stamps) { filter: grayscale(1); pointer-events: none; }
-    .junior-off :is(.miles-card, .story-card, .missions, .stamps) > * { opacity: .4; }
-    .junior-off .story-card { background: var(--color-border); color: var(--text-strong); box-shadow: none; }
+    /* Miles this year: no container */
+    .year-miles { display: flex; flex-direction: column; gap: var(--space-2); }
+    .year-line { color: var(--ink-soft); }
+    .year-line strong { color: var(--ink); font-weight: 700; }
+    .year-miles .progress { margin: 0; height: 8px; background: var(--line); }
 
-    /* Pip */
-    .companion { display: flex; justify-content: center; margin-top: calc(-1 * var(--space-1)); }
-    .pip { filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
-    .pip { display: block; width: 120px; height: auto; }
+    /* Story link and missions: rows with Line dividers, no cards */
+    .story-row {
+      display: flex; align-items: center; justify-content: space-between; min-height: 56px;
+      font-weight: 500; color: var(--ink); border-bottom: 1px solid var(--line);
+    }
+    .story-row .icon { color: var(--jade); }
+    .mission-rows li { display: flex; align-items: center; gap: var(--space-3); min-height: 44px; }
+    .mission-rows li + li { border-top: 1px solid var(--line); }
+    .row-title { flex: 1; min-width: 0; }
+    .row-reward { font-weight: 500; }
+    .row--done .icon { color: var(--jade); }
+    .row--locked { color: var(--ink-soft); }
 
-    /* Cards */
-    .miles-card, .mission, .story-card { border-radius: var(--radius-md); }
-    .miles-card { background: var(--color-card); box-shadow: var(--shadow-card); padding: var(--space-3) var(--space-4); }
+    /* Passport page: staggered, rotated, overlapping stamps */
+    .passport { position: relative; height: 172px; background: var(--paper); border-radius: var(--radius-doc); box-shadow: var(--shadow-doc); overflow: hidden; }
+    .stamp { position: absolute; color: var(--stamp); overflow: visible; }
+    .stamp-city { font-family: var(--font-display); font-size: 13px; font-weight: 700; fill: currentColor; }
+    .stamp-date { font-family: var(--font-mono); font-size: 8.5px; font-weight: 500; fill: currentColor; }
+    .stamp-next {
+      position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      border: 2px dashed var(--line); border-radius: 50%; color: var(--ink-soft);
+      font-size: var(--fs-small); line-height: var(--lh-small); font-weight: 500; text-align: center;
+    }
+
+    /* Junior mode off: grey out, never fade text below ink-soft */
+    .junior-off .pass-wrap { filter: grayscale(1) drop-shadow(0 1px 2px rgba(29, 43, 51, .08)) drop-shadow(0 8px 24px rgba(29, 43, 51, .08)); }
+    .junior-off :is(.year-miles, .trip-list, .passport) { filter: grayscale(1); }
+    .junior-off :is(.pass-wrap, .year-miles, .trip-list, .passport) { pointer-events: none; }
+
+    /* Shared miles summary (mission screen) */
+    .miles-card { border-radius: var(--radius-md); background: var(--color-card); box-shadow: var(--shadow-card); padding: var(--space-3) var(--space-4); }
     .miles-line { font-size: var(--fs-md); color: var(--text-muted); line-height: 1.4; }
     .miles-line strong { font-size: var(--fs-xl); font-weight: 800; color: var(--text-strong); margin-right: 2px; }
     .progress { margin-top: var(--space-3); height: 10px; border-radius: var(--radius-pill); background: var(--color-bg); overflow: hidden; }
     .progress-fill { height: 100%; border-radius: inherit; background: var(--color-accent); }
 
-    .story-card {
-      position: relative; display: block;
-      background: var(--color-primary); color: var(--text-on-primary);
-      padding: var(--space-4) var(--space-6) var(--space-4) var(--space-4);
-      box-shadow: var(--shadow-card);
-    }
-    .story-card::after {
-      content: ""; position: absolute; right: var(--space-4); top: 50%;
-      width: 10px; height: 10px; border: solid currentColor; border-width: 0 2.5px 2.5px 0;
-      transform: translateY(-50%) rotate(-45deg);
-    }
-    .story-card:active { background: var(--color-primary-dark); }
-    .story-card h2 { font-size: var(--fs-lg); font-weight: 700; }
-    .story-card p { font-size: var(--fs-md); opacity: .9; margin-top: 2px; }
-
-    /* Section headings */
-    .missions h2, .stamps h2 { font-size: var(--fs-md); font-weight: 700; color: var(--text-strong); margin-bottom: var(--space-2); }
-
-    /* Missions */
-    .mission-list { display: flex; flex-direction: column; gap: var(--space-2); }
-    .mission {
-      display: flex; align-items: center; gap: var(--space-3);
-      min-height: 52px; padding: var(--space-2) var(--space-3);
-      background: var(--color-card); border: 2px solid transparent;
-    }
-    .mission .icon { flex: none; }
-    .mission-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-    .mission-title { font-size: var(--fs-md); font-weight: 600; color: var(--text-strong); }
-    .mission-reward { font-size: var(--fs-md); color: var(--text-muted); }
-
-    .mission--done { background: transparent; border-color: var(--color-border); }
-    .mission--done .icon { color: var(--color-primary); }
-    .mission--done .mission-title { color: var(--text-muted); }
-
-    .mission--ready { background: var(--color-accent-soft); border-color: var(--color-accent); box-shadow: var(--shadow-card); }
-    .mission--ready .mission-title { font-weight: 700; }
-    .mission--ready .mission-reward { color: var(--text-on-accent); font-weight: 600; }
-    .btn-start {
-      flex: none; font-size: var(--fs-md); font-weight: 700;
-      background: var(--color-primary); color: var(--text-on-primary);
-      padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill);
-    }
-    .btn-start:active { background: var(--color-primary-dark); }
-
-    .mission--locked { background: transparent; border-color: var(--color-border); opacity: .55; }
-    .mission--locked .icon { color: var(--text-muted); }
-
-    /* Stamps */
-    .stamp-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); }
-    .stamp { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); }
-    .stamp-icon { width: 52px; height: 52px; overflow: visible; }
-    .stamp-icon circle { stroke: url(#gold); stroke-width: 3; }
-    .stamp--collected .stamp-icon { filter: drop-shadow(0 2px 4px rgba(184,116,26,.35)); }
-    .stamp--collected .stamp-icon circle { fill: var(--color-primary); }
-    .stamp--collected .stamp-icon path { fill: var(--text-on-primary); }
-    .stamp--open .stamp-icon circle { fill: none; stroke-dasharray: 5 3.5; }
-    .stamp--open .stamp-icon path { fill: var(--color-primary-soft); }
-    .stamp-city { font-size: var(--fs-md); color: var(--text-strong); }
-    .stamp--open .stamp-city { color: var(--text-muted); }
-
-    .concept { text-align: center; font-size: var(--fs-sm); color: var(--text-muted); }
+    .concept { font-size: var(--fs-small); line-height: var(--lh-small); font-weight: 500; color: var(--ink-soft); }
 
     /* Story */
     [data-screen="story"]:not([hidden]),
@@ -210,71 +206,78 @@
 
   <!-- ===== #home ===== -->
   <section data-screen="home" hidden>
-    <svg class="hero-bg" viewBox="0 0 393 340" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
-      <defs>
-        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#03110d"/>
-          <stop offset=".55" stop-color="#0a3129"/>
-          <stop offset="1" stop-color="#14503f"/>
-        </linearGradient>
-      </defs>
-      <rect width="393" height="340" fill="url(#sky)"/>
-      <g class="stars" fill="#fdeed6"></g>
-      <circle cx="338" cy="46" r="15" fill="#fdeed6" opacity=".95"/>
-      <circle cx="346" cy="40" r="13" fill="#03130e"/>
-      <g fill="none" stroke="#cfe8e0" stroke-width="1.4" stroke-linejoin="round" opacity=".6">
-        <path d="M196 34 l22 -4 l-14 10 z"/>
-      </g>
-      <g class="city"></g>
-    </svg>
-
-    <header class="hero">
-      <h1 class="member-name" data-bind="member.name"></h1>
-      <div class="mode-bar">
-        <svg class="mode-star" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" fill="#f2a33a"/></svg>
+    <header class="home-head">
+      <!-- Pip waving: near wing lifted, two motion ticks -->
+      <svg class="pip" viewBox="0 -6 124 86" role="img">
+        <polygon class="body" points="6,22 114,46 36,74"/>
+        <polygon class="fold" points="36,74 114,46 46,58"/>
+        <polygon class="body" points="58,33 94,41 76,4"/>
+        <path class="tick" d="M86 2l7-4M92 12l8-1"/>
+        <circle class="cheek" cx="45" cy="50" r="4"/>
+        <circle class="cheek" cx="80" cy="57" r="4"/>
+        <circle class="eye" cx="54" cy="45" r="5.5"/>
+        <circle class="eye" cx="71" cy="49" r="5.5"/>
+        <circle class="glint" cx="56" cy="43" r="1.8"/>
+        <circle class="glint" cx="73" cy="47" r="1.8"/>
+        <path class="smile" d="M57 55 Q63 60 68 56"/>
+      </svg>
+      <div class="home-title">
+        <h1 data-bind="labels.tripTitle"></h1>
+        <p class="route flight-data"></p>
+      </div>
+      <div class="mode">
         <span id="mode-label" data-bind="labels.juniorMode"></span>
         <button class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="mode-label"><span class="knob"></span></button>
       </div>
     </header>
 
-    <figure class="companion">
-      <svg class="pip" viewBox="0 0 120 90" width="120" role="img">
-        <polygon points="6,22 114,46 36,74" fill="#fff" stroke="#005d4b" stroke-width="3" stroke-linejoin="round"/>
-        <polygon points="36,74 114,46 46,58" fill="#cfe8e0" stroke="#005d4b" stroke-width="3" stroke-linejoin="round"/>
-        <circle cx="47" cy="52" r="4" fill="#fdeed6"/>
-        <circle cx="79" cy="56" r="4" fill="#fdeed6"/>
-        <circle cx="54" cy="43" r="6" fill="#0f2a24"/>
-        <circle cx="72" cy="47" r="6" fill="#0f2a24"/>
-        <circle cx="56" cy="41" r="2" fill="#fff"/>
-        <circle cx="74" cy="45" r="2" fill="#fff"/>
-        <path d="M57 53 Q63 59 69 55" fill="none" stroke="#0f2a24" stroke-width="2.4" stroke-linecap="round"/>
-      </svg>
-    </figure>
+    <div class="pass-wrap">
+      <article class="pass">
+        <div class="pass-main">
+          <div>
+            <p class="pass-code flight-data" data-bind="trip.missionCode"></p>
+            <h2 class="pass-title"></h2>
+          </div>
+          <div class="pass-route">
+            <span class="airport" data-bind="trip.from"></span>
+            <span class="route-line" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path transform="rotate(45 12 12)" d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+            </span>
+            <span class="airport" data-bind="trip.to"></span>
+          </div>
+          <dl class="pass-seat">
+            <div><dt data-bind="labels.gate"></dt><dd class="flight-data" data-bind="trip.gate"></dd></div>
+            <div><dt data-bind="labels.seat"></dt><dd class="flight-data" data-bind="trip.seat"></dd></div>
+          </dl>
+          <div class="pass-action"></div>
+        </div>
+        <div class="tear" aria-hidden="true"></div>
+        <div class="pass-stub">
+          <span class="stub-num"></span>
+          <span class="stub-unit" data-bind="labels.milesUnit"></span>
+        </div>
+      </article>
+    </div>
 
-    <section class="miles-card">
-      <p class="miles-line">
-        <strong data-bind="miles.before"></strong>
+    <div class="year-miles">
+      <p class="year-line">
+        <strong class="year-count"></strong>
         <span data-bind="labels.milesOf"></span>
         <span data-bind="miles.annualCap"></span>
         <span data-bind="labels.milesThisYear"></span>
       </p>
       <div class="progress" role="progressbar" aria-valuemin="0"><div class="progress-fill"></div></div>
-    </section>
+    </div>
 
-    <a class="story-card" href="#story">
-      <h2 data-bind="labels.tripStory"></h2>
-      <p data-bind="trip.label"></p>
-    </a>
+    <div class="trip-list">
+      <a class="story-row" href="#story">
+        <span data-bind="labels.readStory"></span>
+        <svg class="icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <ul class="mission-rows"></ul>
+    </div>
 
-    <section class="missions">
-      <h2 data-bind="labels.missionsTitle"></h2>
-      <ul class="mission-list"></ul>
-    </section>
-
-    <section class="stamps">
-      <h2 data-bind="labels.stampsTitle"></h2>
-      <ul class="stamp-row"></ul>
-    </section>
+    <div class="passport"></div>
 
     <p class="concept" data-bind="labels.concept"></p>
   </section>
@@ -363,12 +366,36 @@
   var D = window.DATA;
   var SCREENS = ["home", "story", "mission"];
 
+  function icon(paths) {
+    return '<svg class="icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths + '</svg>';
+  }
   var ICONS = {
-    done: '<svg class="icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    locked: '<svg class="icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>',
-    ready: '',
-    stamp: '<svg class="stamp-icon" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true"><circle cx="24" cy="24" r="21"/><path d="M14 27l20-8-6 16-4-6z"/></svg>'
+    check: icon('<path d="M20 6 9 17l-5-5"/>'),
+    lock: icon('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>')
   };
+
+  // Passport layout: shape, position and ink per collected stamp (cycled), plus the next-stop slot
+  var STAMPS = [
+    { w: 92, h: 92, x: 16, y: 36, rot: -8, ink: .9, iconY: 17, cityY: 51, dateY: 63,
+      shape: '<circle cx="46" cy="46" r="43" stroke-width="2.5"/><circle cx="46" cy="46" r="37" stroke-width="1.2"/>' },
+    { w: 108, h: 72, x: 94, y: 74, rot: 6, ink: .86, iconY: 12, cityY: 43, dateY: 56,
+      shape: '<rect x="2" y="2" width="104" height="68" rx="12" stroke-width="2.5"/><rect x="7" y="7" width="94" height="58" rx="8" stroke-width="1.2"/>' },
+    { w: 104, h: 78, x: 174, y: 18, rot: -3, ink: .94, iconY: 13, cityY: 44, dateY: 56,
+      shape: '<ellipse cx="52" cy="39" rx="50" ry="37" stroke-width="2.5"/><ellipse cx="52" cy="39" rx="44" ry="31" stroke-width="1.2"/>' }
+  ];
+  var NEXT_SLOT = { size: 80, x: 264, y: 70 };
+
+  function stampSvg(s, spec) {
+    var cx = spec.w / 2;
+    return '<svg class="stamp" width="' + spec.w + '" height="' + spec.h + '" viewBox="0 0 ' + spec.w + ' ' + spec.h + '"' +
+      ' style="left:' + spec.x + 'px;top:' + spec.y + 'px;transform:rotate(' + spec.rot + 'deg);opacity:' + spec.ink + '"' +
+      ' role="img" aria-label="' + s.city + ', ' + s.date + '">' +
+      '<g fill="none" stroke="currentColor">' + spec.shape + '</g>' +
+      '<g transform="translate(' + (cx - 7) + ' ' + spec.iconY + ') scale(.58)" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></g>' +
+      '<text class="stamp-city" x="' + cx + '" y="' + spec.cityY + '" text-anchor="middle">' + s.city.toUpperCase() + '</text>' +
+      '<text class="stamp-date" x="' + cx + '" y="' + spec.dateY + '" text-anchor="middle">' + s.date + '</text>' +
+      '</svg>';
+  }
 
   function get(path) {
     return path.split(".").reduce(function (o, k) { return o == null ? o : o[k]; }, D);
@@ -399,87 +426,59 @@
 
   // Set once the boarding mission screen has been shown
   var boardingDone = false;
+  // The mission shown on the boarding pass: the one that is ready on this trip
+  var passMission = D.missions.filter(function (m) { return m.status === "ready"; })[0];
 
   function renderHome() {
     var root = document.querySelector('[data-screen="home"]');
     bind(root);
 
     root.querySelector(".pip").setAttribute("aria-label", D.companion.name);
+    root.querySelector(".route").textContent = D.trip.from + " → " + D.trip.to;
 
     var miles = boardingDone ? D.miles.after : D.miles.before;
-    root.querySelector('.miles-line strong').textContent = fmt(miles);
+    root.querySelector(".year-count").textContent = fmt(miles);
     setMiles(root, miles);
 
-    var list = root.querySelector(".mission-list");
+    // Boarding pass
+    root.querySelector(".pass").setAttribute("aria-label", D.labels.boardingPass);
+    root.querySelector(".pass-title").textContent = passMission.title;
+    root.querySelector(".stub-num").textContent = "+" + fmt(passMission.reward);
+    var action = root.querySelector(".pass-action");
+    action.innerHTML = "";
+    if (boardingDone) {
+      action.className = "pass-action pass-done";
+      action.innerHTML = ICONS.check;
+      action.appendChild(el("span", null, D.labels.missionComplete));
+    } else {
+      action.className = "pass-action";
+      var btn = el("a", "btn-mission", D.labels.startMission);
+      btn.href = "#mission";
+      action.appendChild(btn);
+    }
+
+    // Other trip missions as plain rows
+    var list = root.querySelector(".mission-rows");
     list.innerHTML = "";
     D.missions.forEach(function (m) {
-      var status = boardingDone && m.id === "boarding" ? "done" : m.status;
-      var li = el("li", "mission mission--" + status);
-      li.innerHTML = ICONS[status] || "";
-      var body = el("div", "mission-body");
-      body.appendChild(el("span", "mission-title", m.title));
-      body.appendChild(el("span", "mission-reward", "+" + m.reward + " " + D.labels.milesUnit));
-      li.appendChild(body);
-      if (status === "ready") {
-        var btn = el("a", "btn-start", D.labels.start);
-        btn.href = "#mission";
-        li.appendChild(btn);
-      }
+      if (m === passMission) return;
+      var li = el("li", "row--" + m.status);
+      li.innerHTML = m.status === "done" ? ICONS.check : ICONS.lock;
+      li.appendChild(el("span", "row-title", m.title));
+      if (m.status === "locked") li.appendChild(el("span", "sr-only", D.labels.locked));
+      li.appendChild(el("span", "row-reward", "+" + fmt(m.reward)));
       list.appendChild(li);
     });
 
-    var row = root.querySelector(".stamp-row");
-    row.innerHTML = "";
+    // Passport page
+    var page = root.querySelector(".passport");
+    var html = "", n = 0;
     D.stamps.forEach(function (s) {
-      var li = el("li", "stamp " + (s.collected ? "stamp--collected" : "stamp--open"));
-      li.innerHTML = ICONS.stamp;
-      li.appendChild(el("span", "stamp-city", s.city));
-      row.appendChild(li);
+      if (s.collected) { html += stampSvg(s, STAMPS[n % STAMPS.length]); n++; return; }
+      html += '<div class="stamp-next" style="left:' + NEXT_SLOT.x + 'px;top:' + NEXT_SLOT.y + 'px;width:' + NEXT_SLOT.size + 'px;height:' + NEXT_SLOT.size + 'px">' +
+        '<span>' + D.labels.nextStop + '</span><span>' + s.city + '</span></div>';
     });
-  }
-
-  // Night-city skyline: deterministic pseudo-random so every load looks the same
-  function drawCity() {
-    var svg = document.querySelector(".hero-bg");
-    if (!svg || svg.getAttribute("data-drawn")) return;
-    var seed = 7;
-    function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
-    var NS = "http://www.w3.org/2000/svg";
-    function add(parent, tag, attrs) {
-      var n = document.createElementNS(NS, tag);
-      for (var k in attrs) n.setAttribute(k, attrs[k]);
-      parent.appendChild(n);
-      return n;
-    }
-
-    var stars = svg.querySelector(".stars");
-    for (var i = 0; i < 26; i++) {
-      add(stars, "circle", { cx: (rnd() * 393).toFixed(1), cy: (rnd() * 150).toFixed(1),
-        r: (0.5 + rnd() * 1.1).toFixed(2), opacity: (0.35 + rnd() * 0.6).toFixed(2) });
-    }
-
-    var city = svg.querySelector(".city");
-    [{ fill: "#0e3a31", base: 190, spread: 70, lit: 0.18 },
-     { fill: "#05201a", base: 230, spread: 80, lit: 0.3 }].forEach(function (layer) {
-      var g = add(city, "g", { fill: layer.fill });
-      var x = -6;
-      while (x < 393) {
-        var w = 18 + Math.floor(rnd() * 26);
-        var top = layer.base + Math.floor(rnd() * layer.spread) - layer.spread / 2;
-        add(g, "rect", { x: x, y: top, width: w, height: 340 - top });
-        if (rnd() < 0.15) add(g, "rect", { x: x + w / 2 - 1, y: top - 14, width: 2, height: 14 });
-        for (var wy = top + 6; wy < 330; wy += 9) {
-          for (var wx = x + 4; wx < x + w - 5; wx += 7) {
-            if (rnd() < layer.lit) {
-              add(g, "rect", { x: wx, y: wy, width: 3, height: 4,
-                fill: rnd() < 0.7 ? "#f2a33a" : "#fdeed6", opacity: (0.5 + rnd() * 0.5).toFixed(2) });
-            }
-          }
-        }
-        x += w + 1;
-      }
-    });
-    svg.setAttribute("data-drawn", "1");
+    page.innerHTML = html;
   }
 
   function renderStory() {
@@ -544,7 +543,7 @@
       if (on && slide) { void s.offsetWidth; s.classList.add(slide); }
     });
     cancelAnimationFrame(countFrame);
-    if (name === "home") { drawCity(); renderHome(); applyJunior(); }
+    if (name === "home") { renderHome(); applyJunior(); }
     if (name === "story") renderStory();
     if (name === "mission") renderMission();
     window.scrollTo(0, 0);
