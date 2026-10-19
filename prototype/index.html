@@ -3,6 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#03110d">
   <title>Little Explorers</title>
   <link rel="stylesheet" href="../shared/tokens.css">
   <script src="../shared/data.js"></script>
@@ -14,14 +18,33 @@
     a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
 
     #app { max-width: 393px; margin: 0 auto; }
-    [data-screen] { padding: var(--space-4) var(--space-4) var(--space-3); }
+    /* Safe-area aware padding: env() is 0 in a normal browser, so layout is unchanged there */
+    [data-screen] {
+      padding:
+        calc(var(--space-4) + env(safe-area-inset-top, 0px))
+        max(var(--space-4), env(safe-area-inset-right, 0px))
+        calc(var(--space-3) + env(safe-area-inset-bottom, 0px))
+        max(var(--space-4), env(safe-area-inset-left, 0px));
+    }
+
+    /* 200ms slide between screens */
+    @keyframes slide-fwd { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes slide-back { from { transform: translateX(-40px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .slide-fwd { animation: slide-fwd .2s ease-out; }
+    .slide-back { animation: slide-back .2s ease-out; }
+    @media (prefers-reduced-motion: reduce) { .slide-fwd, .slide-back { animation: none; } }
+
+    /* Subtle pressed state on everything tappable */
+    .story-card, .btn-start, .btn-back, .btn-done, .switch { transition: transform .1s ease, background .2s ease; }
+    :is(.story-card, .btn-start, .btn-back, .btn-done, .switch):active { transform: scale(.97); }
+    .btn-back:active { background: var(--color-border); }
     [data-screen="home"]:not([hidden]) { display: flex; flex-direction: column; gap: 10px; }
 
     /* Night-city hero background, fading into the page */
     [data-screen="home"] { position: relative; }
     [data-screen="home"] > * { position: relative; z-index: 1; }
     [data-screen="home"] > .hero-bg {
-      position: absolute; z-index: 0; top: 0; left: 0; width: 100%; height: 340px;
+      position: absolute; z-index: 0; top: 0; left: 0; width: 100%; height: calc(340px + env(safe-area-inset-top, 0px));
       -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
               mask-image: linear-gradient(to bottom, #000 55%, transparent);
     }
@@ -503,11 +526,21 @@
     applyJunior();
   });
 
+  // iOS Safari only applies :active when a touch listener exists
+  document.addEventListener("touchstart", function () {}, { passive: true });
+
+  var current = null;
   function show() {
     var name = location.hash.slice(1);
     if (SCREENS.indexOf(name) === -1) name = "home";
+    // Slide in from the right going deeper, from the left going back home; no slide on first load
+    var slide = current && current !== name ? (name === "home" ? "slide-back" : "slide-fwd") : "";
+    current = name;
     document.querySelectorAll("[data-screen]").forEach(function (s) {
-      s.hidden = s.getAttribute("data-screen") !== name;
+      var on = s.getAttribute("data-screen") === name;
+      s.hidden = !on;
+      s.classList.remove("slide-fwd", "slide-back");
+      if (on && slide) { void s.offsetWidth; s.classList.add(slide); }
     });
     cancelAnimationFrame(countFrame);
     if (name === "home") { drawCity(); renderHome(); applyJunior(); }
