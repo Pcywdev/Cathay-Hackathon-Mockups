@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Little Explorers</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <script src="../shared/data.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { overflow-x: hidden; }
+    h1, h2, p, ul, figure { margin: 0; }
+    ul { padding: 0; list-style: none; }
+    a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+
+    #app { max-width: 393px; margin: 0 auto; }
+    [data-screen] { padding: var(--space-4) var(--space-4) var(--space-3); }
+    [data-screen="home"]:not([hidden]) { display: flex; flex-direction: column; gap: 10px; }
+
+    /* Night-city hero background, fading into the page */
+    [data-screen="home"] { position: relative; }
+    [data-screen="home"] > * { position: relative; z-index: 1; }
+    [data-screen="home"] > .hero-bg {
+      position: absolute; z-index: 0; top: 0; left: 0; width: 100%; height: 340px;
+      -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+              mask-image: linear-gradient(to bottom, #000 55%, transparent);
+    }
+
+    /* Header */
+    .hero { display: flex; flex-direction: column; gap: var(--space-2); padding-top: var(--space-2); }
+    .member-name { font-size: var(--fs-xl); font-weight: 800; color: var(--text-on-primary); text-shadow: 0 2px 8px rgba(0,0,0,.4); }
+    .mode-bar {
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+      border-radius: var(--radius-pill);
+      background: rgba(0, 70, 58, .78); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+      color: var(--text-on-primary); font-size: var(--fs-md); font-weight: 700;
+    }
+    .mode-star { flex: none; }
+    #mode-label { flex: 1; }
+
+    /* Toggle switch */
+    .switch {
+      flex: none; position: relative; width: 56px; height: 32px; padding: 0; border: 0; cursor: pointer;
+      border-radius: var(--radius-pill); background: rgba(255,255,255,.28);
+      transition: background .2s ease; -webkit-tap-highlight-color: transparent;
+    }
+    .switch .knob {
+      position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%;
+      background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s ease;
+    }
+    .switch[aria-checked="true"] { background: var(--color-accent); }
+    .switch[aria-checked="true"] .knob { transform: translateX(24px); }
+    .switch:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+    /* Junior mode off: dim the junior content */
+    /* Fade card contents, not cards, so the hero never shows through */
+    .miles-card, .story-card, .missions, .stamps { transition: filter .2s ease; }
+    :is(.miles-card, .story-card, .missions, .stamps) > * { transition: opacity .2s ease; }
+    .junior-off :is(.miles-card, .story-card, .missions, .stamps) { filter: grayscale(1); pointer-events: none; }
+    .junior-off :is(.miles-card, .story-card, .missions, .stamps) > * { opacity: .4; }
+    .junior-off .story-card { background: var(--color-border); color: var(--text-strong); box-shadow: none; }
+
+    /* Pip */
+    .companion { display: flex; justify-content: center; margin-top: calc(-1 * var(--space-1)); }
+    .pip { filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
+    .pip { display: block; width: 120px; height: auto; }
+
+    /* Cards */
+    .miles-card, .mission, .story-card { border-radius: var(--radius-md); }
+    .miles-card { background: var(--color-card); box-shadow: var(--shadow-card); padding: var(--space-3) var(--space-4); }
+    .miles-line { font-size: var(--fs-md); color: var(--text-muted); line-height: 1.4; }
+    .miles-line strong { font-size: var(--fs-xl); font-weight: 800; color: var(--text-strong); margin-right: 2px; }
+    .progress { margin-top: var(--space-3); height: 10px; border-radius: var(--radius-pill); background: var(--color-bg); overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: inherit; background: var(--color-accent); }
+
+    .story-card {
+      position: relative; display: block;
+      background: var(--color-primary); color: var(--text-on-primary);
+      padding: var(--space-4) var(--space-6) var(--space-4) var(--space-4);
+      box-shadow: var(--shadow-card);
+    }
+    .story-card::after {
+      content: ""; position: absolute; right: var(--space-4); top: 50%;
+      width: 10px; height: 10px; border: solid currentColor; border-width: 0 2.5px 2.5px 0;
+      transform: translateY(-50%) rotate(-45deg);
+    }
+    .story-card:active { background: var(--color-primary-dark); }
+    .story-card h2 { font-size: var(--fs-lg); font-weight: 700; }
+    .story-card p { font-size: var(--fs-md); opacity: .9; margin-top: 2px; }
+
+    /* Section headings */
+    .missions h2, .stamps h2 { font-size: var(--fs-md); font-weight: 700; color: var(--text-strong); margin-bottom: var(--space-2); }
+
+    /* Missions */
+    .mission-list { display: flex; flex-direction: column; gap: var(--space-2); }
+    .mission {
+      display: flex; align-items: center; gap: var(--space-3);
+      min-height: 52px; padding: var(--space-2) var(--space-3);
+      background: var(--color-card); border: 2px solid transparent;
+    }
+    .mission .icon { flex: none; }
+    .mission-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .mission-title { font-size: var(--fs-md); font-weight: 600; color: var(--text-strong); }
+    .mission-reward { font-size: var(--fs-md); color: var(--text-muted); }
+
+    .mission--done { background: transparent; border-color: var(--color-border); }
+    .mission--done .icon { color: var(--color-primary); }
+    .mission--done .mission-title { color: var(--text-muted); }
+
+    .mission--ready { background: var(--color-accent-soft); border-color: var(--color-accent); box-shadow: var(--shadow-card); }
+    .mission--ready .mission-title { font-weight: 700; }
+    .mission--ready .mission-reward { color: var(--text-on-accent); font-weight: 600; }
+    .btn-start {
+      flex: none; font-size: var(--fs-md); font-weight: 700;
+      background: var(--color-primary); color: var(--text-on-primary);
+      padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill);
+    }
+    .btn-start:active { background: var(--color-primary-dark); }
+
+    .mission--locked { background: transparent; border-color: var(--color-border); opacity: .55; }
+    .mission--locked .icon { color: var(--text-muted); }
+
+    /* Stamps */
+    .stamp-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); }
+    .stamp { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); }
+    .stamp-icon { width: 52px; height: 52px; overflow: visible; }
+    .stamp-icon circle { stroke: url(#gold); stroke-width: 3; }
+    .stamp--collected .stamp-icon { filter: drop-shadow(0 2px 4px rgba(184,116,26,.35)); }
+    .stamp--collected .stamp-icon circle { fill: var(--color-primary); }
+    .stamp--collected .stamp-icon path { fill: var(--text-on-primary); }
+    .stamp--open .stamp-icon circle { fill: none; stroke-dasharray: 5 3.5; }
+    .stamp--open .stamp-icon path { fill: var(--color-primary-soft); }
+    .stamp-city { font-size: var(--fs-md); color: var(--text-strong); }
+    .stamp--open .stamp-city { color: var(--text-muted); }
+
+    .concept { text-align: center; font-size: var(--fs-xs); color: var(--text-muted); }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe08a"/>
+      <stop offset=".5" stop-color="#f2a33a"/>
+      <stop offset="1" stop-color="#b8741a"/>
+    </linearGradient>
+  </defs>
+</svg>
+<main id="app">
+
+  <!-- ===== #home ===== -->
+  <section data-screen="home" hidden>
+    <svg class="hero-bg" viewBox="0 0 393 340" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#03110d"/>
+          <stop offset=".55" stop-color="#0a3129"/>
+          <stop offset="1" stop-color="#14503f"/>
+        </linearGradient>
+      </defs>
+      <rect width="393" height="340" fill="url(#sky)"/>
+      <g class="stars" fill="#fdeed6"></g>
+      <circle cx="338" cy="46" r="15" fill="#fdeed6" opacity=".95"/>
+      <circle cx="346" cy="40" r="13" fill="#03130e"/>
+      <g fill="none" stroke="#cfe8e0" stroke-width="1.4" stroke-linejoin="round" opacity=".6">
+        <path d="M196 34 l22 -4 l-14 10 z"/>
+      </g>
+      <g class="city"></g>
+    </svg>
+
+    <header class="hero">
+      <h1 class="member-name" data-bind="member.name"></h1>
+      <div class="mode-bar">
+        <svg class="mode-star" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" fill="#f2a33a"/></svg>
+        <span id="mode-label" data-bind="labels.juniorMode"></span>
+        <button class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="mode-label"><span class="knob"></span></button>
+      </div>
+    </header>
+
+    <figure class="companion">
+      <svg class="pip" viewBox="0 0 120 90" width="120" role="img">
+        <polygon points="6,22 114,46 36,74" fill="#fff" stroke="#005d4b" stroke-width="3" stroke-linejoin="round"/>
+        <polygon points="36,74 114,46 46,58" fill="#cfe8e0" stroke="#005d4b" stroke-width="3" stroke-linejoin="round"/>
+        <circle cx="47" cy="52" r="4" fill="#fdeed6"/>
+        <circle cx="79" cy="56" r="4" fill="#fdeed6"/>
+        <circle cx="54" cy="43" r="6" fill="#0f2a24"/>
+        <circle cx="72" cy="47" r="6" fill="#0f2a24"/>
+        <circle cx="56" cy="41" r="2" fill="#fff"/>
+        <circle cx="74" cy="45" r="2" fill="#fff"/>
+        <path d="M57 53 Q63 59 69 55" fill="none" stroke="#0f2a24" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+    </figure>
+
+    <section class="miles-card">
+      <p class="miles-line">
+        <strong data-bind="miles.before"></strong>
+        <span data-bind="labels.milesOf"></span>
+        <span data-bind="miles.annualCap"></span>
+        <span data-bind="labels.milesThisYear"></span>
+      </p>
+      <div class="progress" role="progressbar" aria-valuemin="0"><div class="progress-fill"></div></div>
+    </section>
+
+    <a class="story-card" href="#story">
+      <h2 data-bind="labels.tripStory"></h2>
+      <p data-bind="trip.label"></p>
+    </a>
+
+    <section class="missions">
+      <h2 data-bind="labels.missionsTitle"></h2>
+      <ul class="mission-list"></ul>
+    </section>
+
+    <section class="stamps">
+      <h2 data-bind="labels.stampsTitle"></h2>
+      <ul class="stamp-row"></ul>
+    </section>
+
+    <p class="concept" data-bind="labels.concept"></p>
+  </section>
+
+  <!-- ===== #story (later milestone) ===== -->
+  <section data-screen="story" hidden></section>
+
+  <!-- ===== #mission (later milestone) ===== -->
+  <section data-screen="mission" hidden></section>
+
+</main>
+
+<script>
+(function () {
+  var D = window.DATA;
+  var SCREENS = ["home", "story", "mission"];
+
+  var ICONS = {
+    done: '<svg class="icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    locked: '<svg class="icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>',
+    ready: '',
+    stamp: '<svg class="stamp-icon" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true"><circle cx="24" cy="24" r="21"/><path d="M14 27l20-8-6 16-4-6z"/></svg>'
+  };
+
+  function get(path) {
+    return path.split(".").reduce(function (o, k) { return o == null ? o : o[k]; }, D);
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function renderHome() {
+    var root = document.querySelector('[data-screen="home"]');
+
+    root.querySelectorAll("[data-bind]").forEach(function (n) {
+      var v = get(n.getAttribute("data-bind"));
+      n.textContent = typeof v === "number" ? v.toLocaleString("en") : v;
+    });
+
+    root.querySelector(".pip").setAttribute("aria-label", D.companion.name);
+
+    var bar = root.querySelector(".progress");
+    bar.setAttribute("aria-valuenow", D.miles.before);
+    bar.setAttribute("aria-valuemax", D.miles.annualCap);
+    bar.firstElementChild.style.width = (D.miles.before / D.miles.annualCap * 100) + "%";
+
+    var list = root.querySelector(".mission-list");
+    list.innerHTML = "";
+    D.missions.forEach(function (m) {
+      var li = el("li", "mission mission--" + m.status);
+      li.innerHTML = ICONS[m.status] || "";
+      var body = el("div", "mission-body");
+      body.appendChild(el("span", "mission-title", m.title));
+      body.appendChild(el("span", "mission-reward", "+" + m.reward + " " + D.labels.milesUnit));
+      li.appendChild(body);
+      if (m.status === "ready") {
+        var btn = el("a", "btn-start", D.labels.start);
+        btn.href = "#mission";
+        li.appendChild(btn);
+      }
+      list.appendChild(li);
+    });
+
+    var row = root.querySelector(".stamp-row");
+    row.innerHTML = "";
+    D.stamps.forEach(function (s) {
+      var li = el("li", "stamp " + (s.collected ? "stamp--collected" : "stamp--open"));
+      li.innerHTML = ICONS.stamp;
+      li.appendChild(el("span", "stamp-city", s.city));
+      row.appendChild(li);
+    });
+  }
+
+  // Night-city skyline: deterministic pseudo-random so every load looks the same
+  function drawCity() {
+    var svg = document.querySelector(".hero-bg");
+    if (!svg || svg.getAttribute("data-drawn")) return;
+    var seed = 7;
+    function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    var NS = "http://www.w3.org/2000/svg";
+    function add(parent, tag, attrs) {
+      var n = document.createElementNS(NS, tag);
+      for (var k in attrs) n.setAttribute(k, attrs[k]);
+      parent.appendChild(n);
+      return n;
+    }
+
+    var stars = svg.querySelector(".stars");
+    for (var i = 0; i < 26; i++) {
+      add(stars, "circle", { cx: (rnd() * 393).toFixed(1), cy: (rnd() * 150).toFixed(1),
+        r: (0.5 + rnd() * 1.1).toFixed(2), opacity: (0.35 + rnd() * 0.6).toFixed(2) });
+    }
+
+    var city = svg.querySelector(".city");
+    [{ fill: "#0e3a31", base: 190, spread: 70, lit: 0.18 },
+     { fill: "#05201a", base: 230, spread: 80, lit: 0.3 }].forEach(function (layer) {
+      var g = add(city, "g", { fill: layer.fill });
+      var x = -6;
+      while (x < 393) {
+        var w = 18 + Math.floor(rnd() * 26);
+        var top = layer.base + Math.floor(rnd() * layer.spread) - layer.spread / 2;
+        add(g, "rect", { x: x, y: top, width: w, height: 340 - top });
+        if (rnd() < 0.15) add(g, "rect", { x: x + w / 2 - 1, y: top - 14, width: 2, height: 14 });
+        for (var wy = top + 6; wy < 330; wy += 9) {
+          for (var wx = x + 4; wx < x + w - 5; wx += 7) {
+            if (rnd() < layer.lit) {
+              add(g, "rect", { x: wx, y: wy, width: 3, height: 4,
+                fill: rnd() < 0.7 ? "#f2a33a" : "#fdeed6", opacity: (0.5 + rnd() * 0.5).toFixed(2) });
+            }
+          }
+        }
+        x += w + 1;
+      }
+    });
+    svg.setAttribute("data-drawn", "1");
+  }
+
+  var juniorOn = true;
+  function applyJunior() {
+    var home = document.querySelector('[data-screen="home"]');
+    home.classList.toggle("junior-off", !juniorOn);
+    home.querySelector(".switch").setAttribute("aria-checked", String(juniorOn));
+  }
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest(".switch")) return;
+    juniorOn = !juniorOn;
+    applyJunior();
+  });
+
+  function show() {
+    var name = location.hash.slice(1);
+    if (SCREENS.indexOf(name) === -1) name = "home";
+    document.querySelectorAll("[data-screen]").forEach(function (s) {
+      s.hidden = s.getAttribute("data-screen") !== name;
+    });
+    if (name === "home") { drawCity(); renderHome(); applyJunior(); }
+    window.scrollTo(0, 0);
+  }
+
+  document.addEventListener("DOMContentLoaded", show);
+  window.addEventListener("hashchange", show);
+})();
+</script>
+</body>
+</html>

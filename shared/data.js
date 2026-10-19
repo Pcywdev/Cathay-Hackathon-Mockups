@@ -29,5 +29,15 @@ window.DATA = {
     sweep:  [{ from: "Dad", body: "Moved your miles to my account last night before the cut-off 👍 Optimising." }],
     ending: [{ from: "Dad", body: "Can I borrow some miles?" }, { from: "Mei", body: "Optimising, Dad." }]
   },
-  labels: { concept: "Concept screen · synthetic data" }
+  labels: {
+    concept: "Concept screen · synthetic data",
+    juniorMode: "Junior mode",
+    milesOf: "of",
+    milesThisYear: "miles this year",
+    tripStory: "My trip story",
+    missionsTitle: "Trip missions",
+    stampsTitle: "My stamps",
+    start: "Start",
+    milesUnit: "miles"
+  }
 };
