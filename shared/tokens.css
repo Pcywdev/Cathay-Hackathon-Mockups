@@ -1,0 +1,53 @@
+/* Little Explorers design tokens (concept prototype) */
+:root {
+  /* Brand palette */
+  --color-primary: #005d4b;        /* deep green */
+  --color-primary-dark: #00463a;
+  --color-primary-soft: #cfe8e0;
+  --color-bg: #eaf5f1;             /* light mint */
+  --color-card: #ffffff;
+  --color-accent: #f2a33a;         /* warm amber: rewards / miles */
+  --color-accent-soft: #fdeed6;
+  --color-border: #d3e6df;
+
+  /* Text */
+  --text-strong: #0f2a24;
+  --text-body: #26403a;
+  --text-muted: #4a615b;
+  --text-on-primary: #ffffff;
+  --text-on-accent: #3a2400;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Elevation */
+  --shadow-card: 0 4px 16px rgba(15, 42, 36, 0.08);
+
+  /* Type */
+  --font-sans: -apple-system, "Segoe UI", Roboto, sans-serif;
+  --fs-xs: 11px;
+  --fs-sm: 13px;
+  --fs-md: 15px;
+  --fs-lg: 19px;
+  --fs-xl: 26px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-md);
+  background: var(--color-bg);
+  color: var(--text-body);
+  -webkit-font-smoothing: antialiased;
+}
