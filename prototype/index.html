@@ -136,6 +136,40 @@
     .stamp--open .stamp-city { color: var(--text-muted); }
 
     .concept { text-align: center; font-size: var(--fs-xs); color: var(--text-muted); }
+
+    /* Story */
+    [data-screen="story"]:not([hidden]),
+    [data-screen="mission"]:not([hidden]) { display: flex; flex-direction: column; gap: var(--space-4); }
+    .btn-back {
+      align-self: flex-start; display: inline-flex; align-items: center; gap: var(--space-2);
+      min-height: 44px; padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
+      border-radius: var(--radius-pill); background: var(--color-card); box-shadow: var(--shadow-card);
+      font-size: var(--fs-md); font-weight: 700; color: var(--text-strong);
+    }
+    .btn-back::before {
+      content: ""; width: 9px; height: 9px; border: solid currentColor; border-width: 0 0 2.5px 2.5px;
+      transform: rotate(45deg); margin-left: 4px;
+    }
+    .story-art svg { display: block; width: 100%; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-card); }
+    .story-title { font-size: var(--fs-xl); font-weight: 800; color: var(--text-strong); line-height: 1.2; }
+    .story-text { font-size: 21px; line-height: 1.55; color: var(--text-strong); }
+
+    /* Mission complete */
+    .mission-hero { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); text-align: center; padding-top: var(--space-6); }
+    .burst { filter: drop-shadow(0 6px 14px rgba(184,116,26,.35)); }
+    .mission-heading { font-size: var(--fs-xl); font-weight: 800; color: var(--text-strong); line-height: 1.2; }
+    .reward-badge {
+      font-size: var(--fs-lg); font-weight: 800; color: var(--text-on-accent);
+      background: var(--color-accent-soft); border: 2px solid var(--color-accent);
+      padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill);
+    }
+    .miles-count { font-variant-numeric: tabular-nums; }
+    .btn-done {
+      display: flex; align-items: center; justify-content: center; min-height: 52px;
+      font-size: var(--fs-lg); font-weight: 700; border-radius: var(--radius-pill);
+      background: var(--color-primary); color: var(--text-on-primary); box-shadow: var(--shadow-card);
+    }
+    .btn-done:active { background: var(--color-primary-dark); }
   </style>
 </head>
 <body>
@@ -221,11 +255,82 @@
     <p class="concept" data-bind="labels.concept"></p>
   </section>
 
-  <!-- ===== #story (later milestone) ===== -->
-  <section data-screen="story" hidden></section>
+  <!-- ===== #story ===== -->
+  <section data-screen="story" hidden>
+    <a class="btn-back" href="#home" data-bind="labels.back"></a>
 
-  <!-- ===== #mission (later milestone) ===== -->
-  <section data-screen="mission" hidden></section>
+    <figure class="story-art">
+      <svg viewBox="0 0 361 220" role="img">
+        <defs>
+          <linearGradient id="day-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#7cc6e0"/>
+            <stop offset="1" stop-color="#d9f0f4"/>
+          </linearGradient>
+        </defs>
+        <rect width="361" height="220" fill="url(#day-sky)"/>
+        <circle cx="306" cy="44" r="22" fill="#ffe08a"/>
+        <g fill="#fff" opacity=".7">
+          <ellipse cx="70" cy="60" rx="34" ry="11"/>
+          <ellipse cx="92" cy="52" rx="20" ry="12"/>
+          <ellipse cx="236" cy="96" rx="28" ry="9"/>
+        </g>
+        <!-- Pip, tilted upward, with a little motion trail -->
+        <g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 9" opacity=".9">
+          <path d="M30 150 Q80 120 120 128"/>
+        </g>
+        <g class="story-pip" transform="translate(112 74) rotate(-12 60 45)">
+          <polygon points="6,22 114,46 36,74" fill="#fff" stroke="#005d4b" stroke-width="3" stroke-linejoin="round"/>
+          <polygon points="36,74 114,46 46,58" fill="#cfe8e0" stroke="#005d4b" stroke-width="3" stroke-linejoin="round"/>
+          <circle cx="47" cy="52" r="4" fill="#fdeed6"/>
+          <circle cx="79" cy="56" r="4" fill="#fdeed6"/>
+          <circle cx="54" cy="43" r="6" fill="#0f2a24"/>
+          <circle cx="72" cy="47" r="6" fill="#0f2a24"/>
+          <circle cx="56" cy="41" r="2" fill="#fff"/>
+          <circle cx="74" cy="45" r="2" fill="#fff"/>
+          <path d="M57 53 Q63 59 69 55" fill="none" stroke="#0f2a24" stroke-width="2.4" stroke-linecap="round"/>
+        </g>
+        <g fill="#fff">
+          <ellipse cx="40" cy="214" rx="70" ry="30"/>
+          <ellipse cx="130" cy="200" rx="56" ry="30"/>
+          <ellipse cx="220" cy="214" rx="64" ry="28"/>
+          <ellipse cx="310" cy="202" rx="66" ry="32"/>
+          <rect y="206" width="361" height="14"/>
+        </g>
+      </svg>
+    </figure>
+
+    <h1 class="story-title" data-bind="story.title"></h1>
+    <p class="story-text" data-bind="story.text"></p>
+
+    <p class="concept" data-bind="labels.concept"></p>
+  </section>
+
+  <!-- ===== #mission ===== -->
+  <section data-screen="mission" hidden>
+    <div class="mission-hero">
+      <svg class="burst" viewBox="0 0 120 120" width="120" height="120" aria-hidden="true">
+        <circle cx="60" cy="60" r="50" fill="url(#gold)"/>
+        <circle cx="60" cy="60" r="40" fill="var(--color-primary)"/>
+        <path d="M42 61l12 12 24-26" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h1 class="mission-heading" data-bind="labels.missionComplete"></h1>
+      <span class="reward-badge"></span>
+    </div>
+
+    <section class="miles-card">
+      <p class="miles-line">
+        <strong class="miles-count"></strong>
+        <span data-bind="labels.milesOf"></span>
+        <span data-bind="miles.annualCap"></span>
+        <span data-bind="labels.milesThisYear"></span>
+      </p>
+      <div class="progress" role="progressbar" aria-valuemin="0"><div class="progress-fill"></div></div>
+    </section>
+
+    <a class="btn-done" href="#home" data-bind="labels.done"></a>
+
+    <p class="concept" data-bind="labels.concept"></p>
+  </section>
 
 </main>
 
@@ -252,31 +357,46 @@
     return n;
   }
 
-  function renderHome() {
-    var root = document.querySelector('[data-screen="home"]');
+  function fmt(n) { return n.toLocaleString("en"); }
 
+  function bind(root) {
     root.querySelectorAll("[data-bind]").forEach(function (n) {
       var v = get(n.getAttribute("data-bind"));
-      n.textContent = typeof v === "number" ? v.toLocaleString("en") : v;
+      n.textContent = typeof v === "number" ? fmt(v) : v;
     });
+  }
+
+  function setMiles(root, miles) {
+    var bar = root.querySelector(".progress");
+    bar.setAttribute("aria-valuenow", miles);
+    bar.setAttribute("aria-valuemax", D.miles.annualCap);
+    bar.firstElementChild.style.width = (miles / D.miles.annualCap * 100) + "%";
+  }
+
+  // Set once the boarding mission screen has been shown
+  var boardingDone = false;
+
+  function renderHome() {
+    var root = document.querySelector('[data-screen="home"]');
+    bind(root);
 
     root.querySelector(".pip").setAttribute("aria-label", D.companion.name);
 
-    var bar = root.querySelector(".progress");
-    bar.setAttribute("aria-valuenow", D.miles.before);
-    bar.setAttribute("aria-valuemax", D.miles.annualCap);
-    bar.firstElementChild.style.width = (D.miles.before / D.miles.annualCap * 100) + "%";
+    var miles = boardingDone ? D.miles.after : D.miles.before;
+    root.querySelector('.miles-line strong').textContent = fmt(miles);
+    setMiles(root, miles);
 
     var list = root.querySelector(".mission-list");
     list.innerHTML = "";
     D.missions.forEach(function (m) {
-      var li = el("li", "mission mission--" + m.status);
-      li.innerHTML = ICONS[m.status] || "";
+      var status = boardingDone && m.id === "boarding" ? "done" : m.status;
+      var li = el("li", "mission mission--" + status);
+      li.innerHTML = ICONS[status] || "";
       var body = el("div", "mission-body");
       body.appendChild(el("span", "mission-title", m.title));
       body.appendChild(el("span", "mission-reward", "+" + m.reward + " " + D.labels.milesUnit));
       li.appendChild(body);
-      if (m.status === "ready") {
+      if (status === "ready") {
         var btn = el("a", "btn-start", D.labels.start);
         btn.href = "#mission";
         li.appendChild(btn);
@@ -338,6 +458,39 @@
     svg.setAttribute("data-drawn", "1");
   }
 
+  function renderStory() {
+    var root = document.querySelector('[data-screen="story"]');
+    bind(root);
+    root.querySelector(".story-art svg").setAttribute("aria-label", D.companion.name);
+  }
+
+  // Miles counter: before -> after over ~1.2s, replayed on every visit
+  var COUNT_MS = 1200;
+  var countFrame = 0;
+  function renderMission() {
+    var root = document.querySelector('[data-screen="mission"]');
+    bind(root);
+    root.querySelector(".reward-badge").textContent = "+" + fmt(D.miles.missionReward) + " " + D.labels.milesUnit;
+    boardingDone = true;
+
+    var from = D.miles.before, to = D.miles.after;
+    var count = root.querySelector(".miles-count");
+    function paint(v) { count.textContent = fmt(v); setMiles(root, v); }
+
+    cancelAnimationFrame(countFrame);
+    paint(from);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { paint(to); return; }
+    var start = null;
+    function step(t) {
+      if (start === null) start = t;
+      var p = Math.min((t - start) / COUNT_MS, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      paint(p < 1 ? Math.round(from + (to - from) * eased) : to);
+      if (p < 1) countFrame = requestAnimationFrame(step);
+    }
+    countFrame = requestAnimationFrame(step);
+  }
+
   var juniorOn = true;
   function applyJunior() {
     var home = document.querySelector('[data-screen="home"]');
@@ -356,7 +509,10 @@
     document.querySelectorAll("[data-screen]").forEach(function (s) {
       s.hidden = s.getAttribute("data-screen") !== name;
     });
+    cancelAnimationFrame(countFrame);
     if (name === "home") { drawCity(); renderHome(); applyJunior(); }
+    if (name === "story") renderStory();
+    if (name === "mission") renderMission();
     window.scrollTo(0, 0);
   }
 

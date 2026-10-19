@@ -38,6 +38,9 @@ window.DATA = {
     missionsTitle: "Trip missions",
     stampsTitle: "My stamps",
     start: "Start",
-    milesUnit: "miles"
+    milesUnit: "miles",
+    back: "Back",
+    done: "Done",
+    missionComplete: "Boarding mission complete!"
   }
 };
