@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Little Explorers overlays</title>
+<link rel="stylesheet" href="../shared/fonts.css">
+<link rel="stylesheet" href="../shared/tokens.css">
+<style>
+  /* Overlays imitate native Android (Material 3), so system UI uses the system font. */
+  html, body { background: transparent; }
+  body {
+    margin: 0;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    font-family: Roboto, "Google Sans", system-ui, "Segoe UI", sans-serif;
+    font-variant-numeric: normal;
+  }
+
+  .nav { font-size: 14px; color: var(--jade); }
+
+  /* Android 14 notification card */
+  .notif {
+    width: 360px;
+    box-sizing: border-box;
+    padding: 14px 16px 16px;
+    border-radius: 28px;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: var(--shadow-doc);
+  }
+  .notif-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--ink-soft);
+  }
+  .notif-icon {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--jade);
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+  .notif-icon svg { width: 13px; height: 13px; }
+  .notif-chevron { margin-left: auto; width: 18px; height: 18px; }
+  .notif-title {
+    margin: 8px 0 0;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+  }
+  .notif-body {
+    margin: 2px 0 0;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--ink-soft);
+  }
+
+  /* Google Messages conversation */
+  .convo {
+    width: 360px;
+    box-sizing: border-box;
+    background: var(--paper);
+    color: var(--ink);
+    padding-bottom: 16px;
+  }
+  .convo-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 64px;
+    padding: 0 16px;
+  }
+  .convo-bar svg { width: 24px; height: 24px; flex: none; }
+  .convo-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--jade-tint);
+    color: var(--jade);
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    font-weight: 500;
+    flex: none;
+  }
+  .convo-name { font-size: 18px; line-height: 24px; font-weight: 500; }
+  .convo-time {
+    margin: 8px 0 12px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--ink-soft);
+  }
+  .convo-msgs {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 16px;
+  }
+  .bubble {
+    max-width: 78%;
+    padding: 10px 14px;
+    font-size: 16px;
+    line-height: 22px;
+    border-radius: 20px;
+    overflow-wrap: anywhere;
+  }
+  .bubble.in  { align-self: flex-start; background: var(--sky); border-bottom-left-radius: 6px; }
+  .bubble.out { align-self: flex-end; background: var(--jade); color: var(--paper); border-bottom-right-radius: 6px; }
+</style>
+</head>
+<body>
+<a class="nav" href="../index.html">Back to all screens</a>
+<script src="../shared/data.js"></script>
+<script>
+(function () {
+  var D = window.DATA;
+  var SVG_PLANE = '<svg viewBox="0 0 24 24" fill="none" stroke="#FBFCFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>';
+  var SVG_CHEVRON = '<svg class="notif-chevron" viewBox="0 0 24 24" fill="none" stroke="#56666D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+  var SVG_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="#1D2B33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  // Notification card: n = { title, body }
+  function renderNotification(n, exportName) {
+    var card = el('div', 'notif');
+    card.setAttribute('data-export', exportName);
+    var head = el('div', 'notif-head');
+    var icon = el('span', 'notif-icon');
+    icon.innerHTML = SVG_PLANE;
+    head.appendChild(icon);
+    head.appendChild(el('span', null, n.title));
+    head.appendChild(el('span', null, '•'));
+    head.appendChild(el('span', null, 'now'));
+    head.insertAdjacentHTML('beforeend', SVG_CHEVRON);
+    card.appendChild(head);
+    card.appendChild(el('p', 'notif-title', n.title));
+    card.appendChild(el('p', 'notif-body', n.body));
+    document.body.appendChild(card);
+  }
+
+  // Conversation: contact name, messages = [{ from, body }], "me" is the sender shown as outgoing
+  function renderConversation(contact, messages, me, exportName) {
+    var c = el('div', 'convo');
+    c.setAttribute('data-export', exportName);
+    var bar = el('div', 'convo-bar');
+    bar.innerHTML = SVG_BACK;
+    bar.appendChild(el('span', 'convo-avatar', contact.charAt(0)));
+    bar.appendChild(el('span', 'convo-name', contact));
+    c.appendChild(bar);
+    c.appendChild(el('div', 'convo-time', 'Today'));
+    var list = el('div', 'convo-msgs');
+    messages.forEach(function (m) {
+      list.appendChild(el('div', 'bubble ' + (m.from === me ? 'out' : 'in'), m.body));
+    });
+    c.appendChild(list);
+    document.body.appendChild(c);
+  }
+
+  function render() {
+    var N = D.notifications;
+    renderNotification(N.linkRemoved, 'S1_notif_link_removed');
+    renderNotification(N.graduation, 'S4c_notif_graduation');
+    renderConversation('Dad', D.texts.sweep, D.member.name, 'S2_text_sweep');
+    renderConversation('Dad', D.texts.ending, D.member.name, 'S6_text_ending');
+    N.future.forEach(function (text, i) {
+      renderNotification({ title: N.linkRemoved.title, body: text }, 'S6_future_' + (i + 1));
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', render);
+})();
+</script>
+</body>
+</html>
