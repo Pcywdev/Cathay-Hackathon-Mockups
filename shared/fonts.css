@@ -1,0 +1,22 @@
+/* Red Hat superfamily, self-hosted. SIL Open Font License: see fonts/OFL.txt */
+@font-face {
+  font-family: "Red Hat Display";
+  src: url("fonts/RedHatDisplay-VF.ttf") format("truetype");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Red Hat Text";
+  src: url("fonts/RedHatText-VF.ttf") format("truetype");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Red Hat Mono";
+  src: url("fonts/RedHatMono-VF.ttf") format("truetype");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}

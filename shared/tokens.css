@@ -1,53 +1,84 @@
-/* Little Explorers design tokens (concept prototype) */
+/* Little Explorers design tokens (concept prototype). Source of truth: DESIGN.md */
 :root {
-  /* Brand palette */
-  --color-primary: #005d4b;        /* deep green */
-  --color-primary-dark: #00463a;
-  --color-primary-soft: #cfe8e0;
-  --color-bg: #eaf5f1;             /* light mint */
-  --color-card: #ffffff;
-  --color-accent: #f2a33a;         /* warm amber: rewards / miles */
-  --color-accent-soft: #fdeed6;
-  --color-border: #d3e6df;
+  /* Palette: use only these */
+  --sky: #EAF1F3;        /* app background */
+  --paper: #FBFCFA;      /* document surfaces only */
+  --jade: #0E5E4E;       /* structure: buttons, active states, Pip outline */
+  --ink: #1D2B33;        /* headings and body */
+  --ink-soft: #56666D;   /* secondary text, never lighter */
+  --miles: #F2A033;      /* miles and rewards only */
+  --stamp: #2E4C9E;      /* passport stamp ink only */
+  --line: #D3DEE1;       /* dividers, tear lines, empty stamps */
 
-  /* Text */
-  --text-strong: #0f2a24;
-  --text-body: #26403a;
-  --text-muted: #4a615b;
-  --text-on-primary: #ffffff;
-  --text-on-accent: #3a2400;
+  /* Same-category tints (backgrounds only) */
+  --jade-tint: rgba(14, 94, 78, 0.12);
+  --miles-tint: rgba(242, 160, 51, 0.16);
+  --jade-pressed: color-mix(in srgb, var(--jade) 85%, var(--ink));
 
-  /* Radius */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 22px;
+  /* Legacy names, pointed at the new palette */
+  --color-primary: var(--jade);
+  --color-primary-dark: var(--jade-pressed);
+  --color-primary-soft: var(--jade-tint);
+  --color-bg: var(--sky);
+  --color-card: var(--paper);
+  --color-accent: var(--miles);
+  --color-accent-soft: var(--miles-tint);
+  --color-border: var(--line);
+  --text-strong: var(--ink);
+  --text-body: var(--ink);
+  --text-muted: var(--ink-soft);
+  --text-on-primary: var(--paper);
+  --text-on-accent: var(--ink);
+
+  /* Radius: two only */
+  --radius-doc: 16px;
   --radius-pill: 999px;
+  --radius-md: var(--radius-doc);
 
-  /* Spacing scale */
-  --space-1: 4px;
+  /* Spacing: 8 / 12 / 16 / 24 / 32 / 48 */
+  --space-1: 4px;        /* off-scale, kept until the redesign removes it */
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
   --space-5: 24px;
   --space-6: 32px;
+  --space-7: 48px;
+  --gutter: 20px;
 
-  /* Elevation */
-  --shadow-card: 0 4px 16px rgba(15, 42, 36, 0.08);
+  /* One shadow, documents only */
+  --shadow-doc: 0 1px 2px rgba(29, 43, 51, .08), 0 8px 24px rgba(29, 43, 51, .08);
+  --shadow-card: var(--shadow-doc);
 
-  /* Type */
-  --font-sans: -apple-system, "Segoe UI", Roboto, sans-serif;
-  --fs-xs: 11px;
-  --fs-sm: 13px;
-  --fs-md: 15px;
-  --fs-lg: 19px;
-  --fs-xl: 26px;
+  /* Type families */
+  --font-display: "Red Hat Display", system-ui, sans-serif;
+  --font-text: "Red Hat Text", system-ui, sans-serif;
+  --font-mono: "Red Hat Mono", ui-monospace, monospace;
+  --font-sans: var(--font-text);
+
+  /* Type scale: size / line height */
+  --fs-display: 34px; --lh-display: 40px;   /* 800, Display, max one per screen */
+  --fs-title: 24px;   --lh-title: 30px;     /* 700, Display */
+  --fs-heading: 19px; --lh-heading: 26px;   /* 700, Display */
+  --fs-body: 16px;    --lh-body: 24px;      /* 400 / 500, Text */
+  --fs-small: 13px;   --lh-small: 18px;     /* 500, Text: captions, concept label */
+  --fs-flight: 15px;  --lh-flight: 20px;    /* 500, Mono, 0.04em */
+  --fs-airport: 28px; --lh-airport: 32px;   /* 600, Mono */
+  --tracking-flight: 0.04em;
+
+  /* Legacy size names */
+  --fs-sm: var(--fs-small);
+  --fs-md: var(--fs-body);
+  --fs-lg: var(--fs-heading);
+  --fs-xl: var(--fs-title);
 }
 
 body {
   margin: 0;
-  font-family: var(--font-sans);
-  font-size: var(--fs-md);
-  background: var(--color-bg);
-  color: var(--text-body);
+  font-family: var(--font-text);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-variant-numeric: tabular-nums;
+  background: var(--sky);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
