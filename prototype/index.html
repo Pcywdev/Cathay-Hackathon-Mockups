@@ -8,6 +8,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#EAF1F3">
   <title>Little Explorers</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="../shared/fonts.css">
   <link rel="stylesheet" href="../shared/tokens.css">
   <script src="../shared/data.js"></script>
@@ -787,6 +789,9 @@
 
   document.addEventListener("DOMContentLoaded", show);
   window.addEventListener("hashchange", show);
+
+  // Installable as a full-screen app when served over http(s); skipped on file://
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("sw.js");
 })();
 </script>
 </body>
