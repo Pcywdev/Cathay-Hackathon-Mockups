@@ -19,7 +19,15 @@ window.DATA = {
     { city: "Osaka",   collected: true, date: "03 APR 2026" },
     { city: "Tokyo",   collected: false }
   ],
-  story: { title: "Mei and Pip Fly to Tokyo", text: "Today is a big day: Mei is flying to Tokyo for the very first time! Her paper-plane friend Pip is coming too, tucked safely in her backpack. Pip can't wait to peek out the window at the fluffy clouds below. Together they buckle up, smile big, and get ready for an adventure in the sky." },
+  story: {
+    title: "Mei and Pip fly to Tokyo",
+    // One page per illustration; art names match the SVGs in prototype/index.html
+    pages: [
+      { art: "fly",      text: "Today is a big day: Mei is flying to Tokyo for the very first time!" },
+      { art: "backpack", text: "Her paper-plane friend Pip is coming too, tucked safely in her backpack." },
+      { art: "window",   text: "Pip can't wait to peek out the window at the fluffy clouds below. Together they buckle up, smile big, and get ready for an adventure in the sky." }
+    ]
+  },
   notifications: {
     linkRemoved: { title: "Cathay", body: "Your guardian link has been removed." },
     graduation:  { title: "Cathay", body: "Happy 18th, Mei! 🎓 Your miles, your history and 3 years of family transfers are coming with you." },
@@ -46,6 +54,8 @@ window.DATA = {
     back: "Back",
     done: "Done",
     backToTrip: "Back to my trip",
+    nextPage: "Next page",
+    page: "Page",
     missionComplete: "Boarding mission complete!",
     tripTitle: "Mei's trip",
     startMission: "Start mission",

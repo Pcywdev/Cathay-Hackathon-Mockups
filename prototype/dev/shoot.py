@@ -34,6 +34,15 @@ def main():
             out = SHOTS / f"proto_{screen}.png"
             page.screenshot(path=str(out))
             print(f"saved {out.relative_to(ROOT).as_posix()}")
+            if screen == "story":
+                # Later picture-book pages: turn with the Next page button
+                n = page.locator(".bar").count()
+                for i in range(2, n + 1):
+                    page.click(".btn-next")
+                    page.wait_for_timeout(400)  # 200ms page slide
+                    out = SHOTS / f"proto_story_{i}.png"
+                    page.screenshot(path=str(out))
+                    print(f"saved {out.relative_to(ROOT).as_posix()}")
         browser.close()
     return 0
 

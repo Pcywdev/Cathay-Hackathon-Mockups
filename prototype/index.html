@@ -36,9 +36,8 @@
     @media (prefers-reduced-motion: reduce) { .slide-fwd, .slide-back { animation: none; } }
 
     /* Subtle pressed state on everything tappable */
-    .story-row, .btn-mission, .btn-back, .btn-done, .switch { transition: transform .1s ease, background .2s ease; }
-    :is(.story-row, .btn-mission, .btn-back, .btn-done, .switch):active { transform: scale(.97); }
-    .btn-back:active { background: var(--color-border); }
+    .story-row, .btn-mission, .btn-done, .btn-next, .back-link, .switch { transition: transform .1s ease, background .2s ease; }
+    :is(.story-row, .btn-mission, .btn-done, .btn-next, .back-link, .switch):active { transform: scale(.97); }
     /* ===== Home ===== */
     [data-screen="home"] {
       padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
@@ -98,11 +97,11 @@
     .pass-seat { display: flex; gap: var(--space-5); margin: 0; }
     .pass-seat dt { font-size: var(--fs-small); line-height: var(--lh-small); font-weight: 500; color: var(--ink-soft); }
     .pass-seat dd { margin: 0; color: var(--ink); }
-    .btn-mission, .btn-done {
+    .btn-mission, .btn-done, .btn-next {
       display: flex; align-items: center; justify-content: center; height: 56px; border-radius: var(--radius-pill);
       background: var(--jade); color: var(--paper); font-weight: 500;
     }
-    :is(.btn-mission, .btn-done):active { background: var(--jade-pressed); }
+    :is(.btn-mission, .btn-done, .btn-next):active { background: var(--jade-pressed); }
     .pass-done { display: flex; align-items: center; gap: var(--space-2); height: 56px; font-weight: 500; color: var(--ink); }
     .pass-done .icon { color: var(--jade); }
     .tear { flex: none; width: 0; margin: var(--space-4) 6px; border-left: 2px dashed var(--line); }
@@ -153,21 +152,44 @@
 
     .concept { font-size: var(--fs-small); line-height: var(--lh-small); font-weight: 500; color: var(--ink-soft); }
 
-    /* Story */
-    [data-screen="story"]:not([hidden]) { display: flex; flex-direction: column; gap: var(--space-4); }
-    .btn-back {
-      align-self: flex-start; display: inline-flex; align-items: center; gap: var(--space-2);
-      min-height: 44px; padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
-      border-radius: var(--radius-pill); background: var(--color-card); box-shadow: var(--shadow-card);
-      font-size: var(--fs-md); font-weight: 700; color: var(--text-strong);
+    /* ===== Story: picture book, hero is the illustration ===== */
+    [data-screen="story"] {
+      padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+      padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
     }
-    .btn-back::before {
-      content: ""; width: 9px; height: 9px; border: solid currentColor; border-width: 0 0 2.5px 2.5px;
-      transform: rotate(45deg); margin-left: 4px;
+    [data-screen="story"]:not([hidden]) { display: flex; flex-direction: column; gap: var(--space-4); min-height: 100svh; }
+    .back-link { align-self: flex-start; display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font-weight: 500; color: var(--ink); }
+    .back-link .icon { color: var(--jade); }
+
+    .story-page {
+      flex: 1; min-height: 420px; display: flex; flex-direction: column; touch-action: pan-y; user-select: none;
+      background: var(--paper); border-radius: var(--radius-doc); box-shadow: var(--shadow-doc); overflow: hidden;
     }
-    .story-art svg { display: block; width: 100%; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-card); }
-    .story-title { font-size: var(--fs-xl); font-weight: 800; color: var(--text-strong); line-height: 1.2; }
-    .story-text { font-size: 21px; line-height: 1.55; color: var(--text-strong); }
+    .story-art { position: relative; flex: 1; min-height: 240px; cursor: pointer; }
+    .story-art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .story-copy { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-5) var(--space-4); }
+    .story-title { font-family: var(--font-display); font-size: var(--fs-title); line-height: var(--lh-title); font-weight: 700; color: var(--ink); }
+    .story-text { color: var(--ink); }
+
+    .story-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+    .story-foot [hidden] { display: none; }
+    .btn-next { padding: 0 var(--space-5); border: 0; font: inherit; font-weight: 500; cursor: pointer; }
+    .story-foot .btn-done { padding: 0 var(--space-5); }
+    .page-bars { display: flex; align-items: center; }
+    .bar { padding: var(--space-2) 4px; border: 0; background: none; cursor: pointer; }
+    .bar::before { content: ""; display: block; width: 8px; height: 8px; border-radius: var(--radius-pill); background: var(--line); transition: width .2s ease; }
+    .bar[aria-current="page"]::before { width: 24px; background: var(--jade); }
+
+    /* Illustration parts: palette tokens only */
+    .art-sky { fill: var(--sky); }
+    .art-cloud { fill: var(--paper); stroke: var(--line); stroke-width: 2; stroke-linejoin: round; }
+    .art-trail { fill: none; stroke: var(--jade); stroke-width: 3; stroke-linecap: round; stroke-dasharray: .1 12; }
+    .art-frame, .art-bag { fill: var(--paper); stroke: var(--jade); stroke-width: 3; stroke-linejoin: round; }
+    .art-glass { fill: var(--sky); stroke: var(--line); stroke-width: 3; }
+    .art-pocket { fill: var(--jade-tint); stroke: var(--jade); stroke-width: 2.5; }
+    .art-line { fill: none; stroke: var(--jade); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .art-shade { fill: var(--line); }
+    .art-tag { font-family: var(--font-mono); font-size: 13px; font-weight: 600; letter-spacing: .04em; fill: var(--ink); }
 
     /* ===== Mission complete: hero is the stamp on a passport page ===== */
     [data-screen="mission"] {
@@ -316,50 +338,100 @@
 
   <!-- ===== #story ===== -->
   <section data-screen="story" hidden>
-    <a class="btn-back" href="#home" data-bind="labels.back"></a>
+    <a class="back-link" href="#home">
+      <svg class="icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      <span data-bind="labels.backToTrip"></span>
+    </a>
 
-    <figure class="story-art">
-      <svg viewBox="0 0 361 220" role="img">
-        <defs>
-          <linearGradient id="day-sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#7cc6e0"/>
-            <stop offset="1" stop-color="#d9f0f4"/>
-          </linearGradient>
-        </defs>
-        <rect width="361" height="220" fill="url(#day-sky)"/>
-        <circle cx="306" cy="44" r="22" fill="#ffe08a"/>
-        <g fill="#fff" opacity=".7">
-          <ellipse cx="70" cy="60" rx="34" ry="11"/>
-          <ellipse cx="92" cy="52" rx="20" ry="12"/>
-          <ellipse cx="236" cy="96" rx="28" ry="9"/>
-        </g>
-        <!-- Pip, tilted upward, with a little motion trail -->
-        <g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 9" opacity=".9">
-          <path d="M30 150 Q80 120 120 128"/>
-        </g>
-        <g class="story-pip" transform="translate(112 74) rotate(-12 60 45)">
-          <polygon points="6,22 114,46 36,74" fill="#fff" stroke="#005d4b" stroke-width="3" stroke-linejoin="round"/>
-          <polygon points="36,74 114,46 46,58" fill="#cfe8e0" stroke="#005d4b" stroke-width="3" stroke-linejoin="round"/>
-          <circle cx="47" cy="52" r="4" fill="#fdeed6"/>
-          <circle cx="79" cy="56" r="4" fill="#fdeed6"/>
-          <circle cx="54" cy="43" r="6" fill="#0f2a24"/>
-          <circle cx="72" cy="47" r="6" fill="#0f2a24"/>
-          <circle cx="56" cy="41" r="2" fill="#fff"/>
-          <circle cx="74" cy="45" r="2" fill="#fff"/>
-          <path d="M57 53 Q63 59 69 55" fill="none" stroke="#0f2a24" stroke-width="2.4" stroke-linecap="round"/>
-        </g>
-        <g fill="#fff">
-          <ellipse cx="40" cy="214" rx="70" ry="30"/>
-          <ellipse cx="130" cy="200" rx="56" ry="30"/>
-          <ellipse cx="220" cy="214" rx="64" ry="28"/>
-          <ellipse cx="310" cy="202" rx="66" ry="32"/>
-          <rect y="206" width="361" height="14"/>
-        </g>
-      </svg>
-    </figure>
+    <article class="story-page">
+      <div class="story-art">
+        <!-- Page 1: Pip flying up into the sky on a dotted trail -->
+        <svg data-art="fly" viewBox="0 0 353 520" preserveAspectRatio="xMidYMax slice" role="img">
+          <rect class="art-sky" width="353" height="520"/>
+          <path class="art-cloud" d="M28 112q2-20 24-18q10-18 32-10q20-6 26 14q18 2 16 14z"/>
+          <path class="art-cloud" d="M236 74q2-16 20-14q8-14 26-8q16-4 20 12q14 2 12 10z"/>
+          <path class="art-trail" d="M8 400C60 370 100 280 162 248"/>
+          <g class="pip" transform="translate(130 150) scale(1.6) rotate(-14 60 45)">
+            <polygon class="body" points="6,22 114,46 36,74"/>
+            <polygon class="fold" points="36,74 114,46 46,58"/>
+            <polygon class="body" points="58,33 94,41 82,18"/>
+            <circle class="cheek" cx="45" cy="50" r="4"/>
+            <circle class="cheek" cx="80" cy="57" r="4"/>
+            <circle class="eye" cx="54" cy="45" r="5.5"/>
+            <circle class="eye" cx="71" cy="49" r="5.5"/>
+            <circle class="glint" cx="56" cy="43" r="1.8"/>
+            <circle class="glint" cx="73" cy="47" r="1.8"/>
+            <path class="smile" d="M56 55 Q63 62 69 56"/>
+          </g>
+          <path class="art-cloud" transform="translate(0 76)" d="M-10 530V452q30-32 68-16q22-36 66-16q26-28 68-6q34-26 70 2q38-20 68 14q26-10 40 10v90z"/>
+        </svg>
+        <!-- Page 2: Pip peeking out of Mei's backpack, looking up -->
+        <svg data-art="backpack" viewBox="0 0 353 520" preserveAspectRatio="xMidYMax slice" role="img" style="display:none">
+          <rect class="art-sky" width="353" height="520"/>
+          <path class="art-cloud" d="M236 96q2-20 24-18q10-18 32-10q20-6 26 14q18 2 16 14z"/>
+          <path class="art-cloud" transform="translate(0 76)" d="M-10 530V452q30-32 68-16q22-36 66-16q26-28 68-6q34-26 70 2q38-20 68 14q26-10 40 10v90z"/>
+          <g transform="translate(0 76)">
+          <path class="art-bag" d="M112 304Q176 276 240 304"/>
+          <g class="pip" transform="translate(116 190) scale(1.5) rotate(-28 60 45)">
+            <polygon class="body" points="6,22 114,46 36,74"/>
+            <polygon class="fold" points="36,74 114,46 46,58"/>
+            <circle class="cheek" cx="45" cy="50" r="4"/>
+            <circle class="cheek" cx="80" cy="57" r="4"/>
+            <circle class="eye" cx="54" cy="45" r="5.5"/>
+            <circle class="eye" cx="71" cy="49" r="5.5"/>
+            <circle class="glint" cx="55" cy="42" r="1.8"/>
+            <circle class="glint" cx="72" cy="46" r="1.8"/>
+            <path class="smile" d="M57 54 Q63 61 69 55"/>
+          </g>
+          <rect class="art-bag" x="100" y="298" width="152" height="150" rx="36"/>
+          <rect class="art-pocket" x="128" y="354" width="96" height="66" rx="16"/>
+          <path class="art-line" d="M128 374H224M164 384v14"/>
+          <path class="art-line" d="M252 322q18 4 22 24"/>
+          <rect class="art-bag" x="252" y="344" width="56" height="30" rx="6"/>
+          <text class="art-tag" x="280" y="364" text-anchor="middle" data-bind="trip.to"></text>
+          </g>
+        </svg>
+        <!-- Page 3: Pip on the window sill, nose to the glass, clouds below -->
+        <svg data-art="window" viewBox="0 0 353 520" preserveAspectRatio="xMidYMax slice" role="img" style="display:none">
+          <defs><clipPath id="win-glass"><rect x="86" y="80" width="180" height="320" rx="90"/></clipPath></defs>
+          <rect class="art-sky" width="353" height="520"/>
+          <g transform="translate(0 28)">
+          <rect class="art-frame" x="66" y="60" width="220" height="360" rx="110"/>
+          <rect class="art-glass" x="86" y="80" width="180" height="320" rx="90"/>
+          <g clip-path="url(#win-glass)">
+            <rect class="art-shade" x="86" y="80" width="180" height="44"/>
+            <path class="art-cloud" d="M110 190q2-16 20-14q8-14 26-8q16-4 20 12q14 2 12 10z"/>
+            <polygon class="art-frame" points="280,256 140,302 280,324"/>
+            <path class="art-cloud" d="M70 410V338q22-24 50-10q18-26 50-8q22-20 52 0q26-18 52 6v64z"/>
+          </g>
+          <rect class="art-glass" x="86" y="80" width="180" height="320" rx="90" style="fill:none"/>
+          <g class="pip" transform="translate(350 356) scale(-1.3 1.3)">
+            <polygon class="body" points="6,22 114,46 36,74"/>
+            <polygon class="fold" points="36,74 114,46 46,58"/>
+            <polygon class="body" points="58,33 94,41 72,24"/>
+            <circle class="cheek" cx="45" cy="50" r="4"/>
+            <circle class="cheek" cx="80" cy="57" r="4"/>
+            <circle class="eye" cx="54" cy="45" r="5.5"/>
+            <circle class="eye" cx="71" cy="49" r="5.5"/>
+            <circle class="glint" cx="56" cy="44" r="1.8"/>
+            <circle class="glint" cx="73" cy="48" r="1.8"/>
+            <path class="smile" d="M57 55 Q63 61 69 56"/>
+          </g>
+          </g>
+          <path class="art-cloud" d="M-10 480H363V530H-10z"/>
+        </svg>
+      </div>
+      <div class="story-copy">
+        <h1 class="story-title" data-bind="story.title"></h1>
+        <p class="story-text"></p>
+      </div>
+    </article>
 
-    <h1 class="story-title" data-bind="story.title"></h1>
-    <p class="story-text" data-bind="story.text"></p>
+    <div class="story-foot">
+      <div class="page-bars"></div>
+      <button class="btn-next" type="button" data-bind="labels.nextPage"></button>
+      <a class="btn-done" href="#home" data-bind="labels.backToTrip" hidden></a>
+    </div>
 
     <p class="concept" data-bind="labels.concept"></p>
   </section>
@@ -544,11 +616,76 @@
     page.innerHTML = html;
   }
 
+  // Picture book: one page per D.story.pages entry, always opens on page 1
+  var storyPage = 0;
   function renderStory() {
     var root = document.querySelector('[data-screen="story"]');
     bind(root);
-    root.querySelector(".story-art svg").setAttribute("aria-label", D.companion.name);
+    root.querySelectorAll(".story-art svg").forEach(function (s) { s.setAttribute("aria-label", D.companion.name); });
+    var bars = root.querySelector(".page-bars");
+    if (!bars.childElementCount) {
+      D.story.pages.forEach(function (p, i) {
+        var b = el("button", "bar");
+        b.type = "button";
+        b.setAttribute("aria-label", D.labels.page + " " + (i + 1));
+        b.addEventListener("click", function () { goPage(i); });
+        bars.appendChild(b);
+      });
+    }
+    goPage(0, true);
   }
+
+  function goPage(i, instant) {
+    var root = document.querySelector('[data-screen="story"]');
+    var pages = D.story.pages;
+    i = Math.max(0, Math.min(pages.length - 1, i));
+    if (!instant && i === storyPage) return;
+    var slide = i > storyPage ? "slide-fwd" : "slide-back";
+    storyPage = i;
+
+    root.querySelectorAll(".story-art svg").forEach(function (s) {
+      s.style.display = s.getAttribute("data-art") === pages[i].art ? "" : "none";
+    });
+    root.querySelector(".story-title").hidden = i !== 0;
+    root.querySelector(".story-text").textContent = pages[i].text;
+    root.querySelectorAll(".bar").forEach(function (b, j) {
+      if (j === i) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    });
+    var last = i === pages.length - 1;
+    root.querySelector(".btn-next").hidden = last;
+    root.querySelector(".story-foot .btn-done").hidden = !last;
+
+    var page = root.querySelector(".story-page");
+    page.classList.remove("slide-fwd", "slide-back");
+    if (!instant) { void page.offsetWidth; page.classList.add(slide); }
+  }
+
+  document.addEventListener("click", function (e) {
+    if (e.target.closest(".btn-next")) goPage(storyPage + 1);
+  });
+
+  // Swipe the page to turn it; a tap on the right or left of the picture also turns it
+  var swipe = null;
+  document.addEventListener("pointerdown", function (e) {
+    var page = e.target.closest(".story-page");
+    swipe = page ? { x: e.clientX, y: e.clientY } : null;
+  });
+  document.addEventListener("pointerup", function (e) {
+    if (!swipe) return;
+    var dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
+    swipe = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { goPage(storyPage + (dx < 0 ? 1 : -1)); return; }
+    var art = e.target.closest(".story-art");
+    if (!art || Math.abs(dx) > 10 || Math.abs(dy) > 10) return;
+    var r = art.getBoundingClientRect(), at = (e.clientX - r.left) / r.width;
+    if (at > .6) goPage(storyPage + 1);
+    else if (at < .4) goPage(storyPage - 1);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (current !== "story") return;
+    if (e.key === "ArrowRight") goPage(storyPage + 1);
+    if (e.key === "ArrowLeft") goPage(storyPage - 1);
+  });
 
   // Earlier stamps around the edges of the mission passport page, one spot per collected stamp
   var PAGE_SPOTS = [
