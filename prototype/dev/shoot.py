@@ -30,7 +30,7 @@ def main():
         for screen in SCREENS:
             page.goto(INDEX.as_uri() + "#" + screen)
             page.reload()  # hash-only navigation does not reload the page
-            page.wait_for_timeout(800)
+            page.wait_for_timeout(1800)  # let the mission stamp and miles counter finish
             out = SHOTS / f"proto_{screen}.png"
             page.screenshot(path=str(out))
             print(f"saved {out.relative_to(ROOT).as_posix()}")

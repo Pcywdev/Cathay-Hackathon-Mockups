@@ -98,11 +98,11 @@
     .pass-seat { display: flex; gap: var(--space-5); margin: 0; }
     .pass-seat dt { font-size: var(--fs-small); line-height: var(--lh-small); font-weight: 500; color: var(--ink-soft); }
     .pass-seat dd { margin: 0; color: var(--ink); }
-    .btn-mission {
+    .btn-mission, .btn-done {
       display: flex; align-items: center; justify-content: center; height: 56px; border-radius: var(--radius-pill);
       background: var(--jade); color: var(--paper); font-weight: 500;
     }
-    .btn-mission:active { background: var(--jade-pressed); }
+    :is(.btn-mission, .btn-done):active { background: var(--jade-pressed); }
     .pass-done { display: flex; align-items: center; gap: var(--space-2); height: 56px; font-weight: 500; color: var(--ink); }
     .pass-done .icon { color: var(--jade); }
     .tear { flex: none; width: 0; margin: var(--space-4) 6px; border-left: 2px dashed var(--line); }
@@ -148,18 +148,13 @@
     .junior-off :is(.year-miles, .trip-list, .passport) { filter: grayscale(1); }
     .junior-off :is(.pass-wrap, .year-miles, .trip-list, .passport) { pointer-events: none; }
 
-    /* Shared miles summary (mission screen) */
-    .miles-card { border-radius: var(--radius-md); background: var(--color-card); box-shadow: var(--shadow-card); padding: var(--space-3) var(--space-4); }
-    .miles-line { font-size: var(--fs-md); color: var(--text-muted); line-height: 1.4; }
-    .miles-line strong { font-size: var(--fs-xl); font-weight: 800; color: var(--text-strong); margin-right: 2px; }
     .progress { margin-top: var(--space-3); height: 10px; border-radius: var(--radius-pill); background: var(--color-bg); overflow: hidden; }
     .progress-fill { height: 100%; border-radius: inherit; background: var(--color-accent); }
 
     .concept { font-size: var(--fs-small); line-height: var(--lh-small); font-weight: 500; color: var(--ink-soft); }
 
     /* Story */
-    [data-screen="story"]:not([hidden]),
-    [data-screen="mission"]:not([hidden]) { display: flex; flex-direction: column; gap: var(--space-4); }
+    [data-screen="story"]:not([hidden]) { display: flex; flex-direction: column; gap: var(--space-4); }
     .btn-back {
       align-self: flex-start; display: inline-flex; align-items: center; gap: var(--space-2);
       min-height: 44px; padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
@@ -174,32 +169,69 @@
     .story-title { font-size: var(--fs-xl); font-weight: 800; color: var(--text-strong); line-height: 1.2; }
     .story-text { font-size: 21px; line-height: 1.55; color: var(--text-strong); }
 
-    /* Mission complete */
-    .mission-hero { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); text-align: center; padding-top: var(--space-6); }
-    .burst { filter: drop-shadow(0 6px 14px rgba(184,116,26,.35)); }
-    .mission-heading { font-size: var(--fs-xl); font-weight: 800; color: var(--text-strong); line-height: 1.2; }
-    .reward-badge {
-      font-size: var(--fs-lg); font-weight: 800; color: var(--text-on-accent);
-      background: var(--color-accent-soft); border: 2px solid var(--color-accent);
-      padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill);
+    /* ===== Mission complete: hero is the stamp on a passport page ===== */
+    [data-screen="mission"] {
+      padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+      padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
     }
-    .miles-count { font-variant-numeric: tabular-nums; }
-    .btn-done {
-      display: flex; align-items: center; justify-content: center; min-height: 52px;
-      font-size: var(--fs-lg); font-weight: 700; border-radius: var(--radius-pill);
-      background: var(--color-primary); color: var(--text-on-primary); box-shadow: var(--shadow-card);
+    [data-screen="mission"]:not([hidden]) { display: flex; flex-direction: column; gap: var(--space-5); min-height: 100svh; text-align: center; }
+
+    /* Passport page grows to fill the screen, stamp centred in it */
+    .mission-page {
+      position: relative; flex: 1; min-height: 340px; display: flex; align-items: center; justify-content: center;
+      background: var(--paper); border-radius: var(--radius-doc); box-shadow: var(--shadow-doc); overflow: hidden;
     }
-    .btn-done:active { background: var(--color-primary-dark); }
+    .press { position: relative; width: 264px; height: 264px; }
+    .badge-stamp { display: block; width: 100%; height: 100%; color: var(--stamp); opacity: .92; transform: rotate(-8deg); overflow: visible; }
+    .badge-title { font-family: var(--font-display); font-size: 18px; font-weight: 800; letter-spacing: .06em; fill: currentColor; }
+    .badge-route { font-family: var(--font-mono); font-size: 14px; font-weight: 600; letter-spacing: .04em; fill: currentColor; }
+    .badge-code { font-family: var(--font-mono); font-size: 15px; font-weight: 500; letter-spacing: .04em; fill: currentColor; }
+    /* Nose sits on the stamp's outer ring, just right of 12 o'clock */
+    .pip--press { position: absolute; width: 140px; left: 159px; top: -102px; }
+    @media (max-width: 360px) { .press { transform: scale(.8); } }
+    .pip .lid { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+
+    .mission-result { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+    .mission-heading { font-family: var(--font-display); font-size: var(--fs-title); line-height: var(--lh-title); font-weight: 700; color: var(--ink); }
+    .reward-chip {
+      position: relative; isolation: isolate; display: inline-flex; padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill);
+      background: var(--miles); color: var(--ink);
+      font-family: var(--font-display); font-size: var(--fs-heading); line-height: var(--lh-heading); font-weight: 700;
+    }
+    .mission-miles { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: var(--space-2); color: var(--ink-soft); }
+    .miles-count { font-family: var(--font-display); font-size: var(--fs-display); line-height: var(--lh-display); font-weight: 800; color: var(--ink); }
+    .mission-result .progress { width: 100%; height: 8px; margin: 0; background: var(--line); }
+    .mission-foot { display: flex; flex-direction: column; gap: var(--space-3); }
+
+    /* The one orchestrated moment: stamp thumps, Pip presses, then confetti from the reward while miles count */
+    .confetti { position: absolute; left: 50%; top: 50%; z-index: -1; pointer-events: none; }
+    .confetti i { position: absolute; width: 6px; height: 10px; background: var(--miles); opacity: 0; }
+    @keyframes thump {
+      0% { transform: scale(1.3) rotate(-14deg); opacity: 0; }
+      70% { transform: scale(.97) rotate(-8deg); opacity: .92; }
+      100% { transform: scale(1) rotate(-8deg); opacity: .92; }
+    }
+    @keyframes press { from { transform: translate(8px, -12px); } to { transform: none; } }
+    @keyframes confetti {
+      0% { opacity: 1; transform: translate(-50%, -50%) rotate(0); }
+      70% { opacity: 1; }
+      100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--r)); }
+    }
+    .play .badge-stamp { animation: thump .22s ease-out both; }
+    .play .pip--press { animation: press .22s ease-out both; }
+    .play .confetti i { animation: confetti .8s cubic-bezier(.2, .7, .3, 1) .22s both; }
+    @media (prefers-reduced-motion: reduce) { .confetti { display: none; } }
   </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ffe08a"/>
-      <stop offset=".5" stop-color="#f2a33a"/>
-      <stop offset="1" stop-color="#b8741a"/>
-    </linearGradient>
+    <!-- Ink texture: speckled alpha so the stamp reads as pressed ink -->
+    <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4" result="noise"/>
+      <feColorMatrix in="noise" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -.9 1.3" result="speckle"/>
+      <feComposite in="SourceGraphic" in2="speckle" operator="in"/>
+    </filter>
   </defs>
 </svg>
 <main id="app">
@@ -334,29 +366,60 @@
 
   <!-- ===== #mission ===== -->
   <section data-screen="mission" hidden>
-    <div class="mission-hero">
-      <svg class="burst" viewBox="0 0 120 120" width="120" height="120" aria-hidden="true">
-        <circle cx="60" cy="60" r="50" fill="url(#gold)"/>
-        <circle cx="60" cy="60" r="40" fill="var(--color-primary)"/>
-        <path d="M42 61l12 12 24-26" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <h1 class="mission-heading" data-bind="labels.missionComplete"></h1>
-      <span class="reward-badge"></span>
+    <div class="mission-page">
+      <div class="page-stamps"></div>
+      <div class="press">
+        <svg class="badge-stamp" viewBox="0 0 220 220" role="img">
+          <g filter="url(#ink)">
+            <g fill="none" stroke="currentColor">
+              <circle cx="110" cy="110" r="104" stroke-width="4"/>
+              <circle cx="110" cy="110" r="95" stroke-width="1.6"/>
+              <circle cx="110" cy="110" r="60" stroke-width="1.6"/>
+            </g>
+            <path id="badge-top" d="M38 110 A72 72 0 0 1 182 110" fill="none"/>
+            <path id="badge-bottom" d="M26 110 A84 84 0 0 0 194 110" fill="none"/>
+            <text class="badge-title"><textPath href="#badge-top" startOffset="50%" text-anchor="middle"></textPath></text>
+            <text class="badge-route"><textPath href="#badge-bottom" startOffset="50%" text-anchor="middle"></textPath></text>
+            <circle cx="33" cy="110" r="3" fill="currentColor"/>
+            <circle cx="187" cy="110" r="3" fill="currentColor"/>
+            <g transform="translate(92 66) scale(1.5)" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></g>
+            <text class="badge-code" x="110" y="134" text-anchor="middle"></text>
+          </g>
+        </svg>
+        <!-- Pip pressing the stamp: mirrored, nose down onto the ink, eyes closed and smiling -->
+        <svg class="pip pip--press" viewBox="0 -8 112 104" role="img">
+          <path class="tick" d="M104 4l-9 5M108 24l-9 5M104 44l-9 5"/>
+          <g transform="translate(80 -14) rotate(-30) scale(-1 1)">
+            <polygon class="body" points="6,22 114,46 36,74"/>
+            <polygon class="fold" points="36,74 114,46 46,58"/>
+            <polygon class="body" points="58,33 94,41 70,16"/>
+          </g>
+          <!-- Face drawn upright on the body, above the fold -->
+          <g transform="rotate(-12 67 47)">
+            <circle class="cheek" cx="54" cy="52" r="4.5"/>
+            <circle class="cheek" cx="80" cy="52" r="4.5"/>
+            <path class="lid" d="M55 44 Q60 38 65 44"/>
+            <path class="lid" d="M69 44 Q74 38 79 44"/>
+            <path class="smile" d="M61 50 Q67 57 73 50"/>
+          </g>
+        </svg>
+      </div>
     </div>
 
-    <section class="miles-card">
-      <p class="miles-line">
+    <div class="mission-result">
+      <h1 class="mission-heading" data-bind="labels.missionComplete"></h1>
+      <span class="reward-chip"><span class="confetti" aria-hidden="true"></span><span class="reward-text"></span></span>
+      <p class="mission-miles">
         <strong class="miles-count"></strong>
-        <span data-bind="labels.milesOf"></span>
-        <span data-bind="miles.annualCap"></span>
-        <span data-bind="labels.milesThisYear"></span>
+        <span><span data-bind="labels.milesOf"></span> <span data-bind="miles.annualCap"></span> <span data-bind="labels.milesThisYear"></span></span>
       </p>
       <div class="progress" role="progressbar" aria-valuemin="0"><div class="progress-fill"></div></div>
-    </section>
+    </div>
 
-    <a class="btn-done" href="#home" data-bind="labels.done"></a>
-
-    <p class="concept" data-bind="labels.concept"></p>
+    <div class="mission-foot">
+      <a class="btn-done" href="#home" data-bind="labels.backToTrip"></a>
+      <p class="concept" data-bind="labels.concept"></p>
+    </div>
   </section>
 
 </main>
@@ -388,7 +451,7 @@
   function stampSvg(s, spec) {
     var cx = spec.w / 2;
     return '<svg class="stamp" width="' + spec.w + '" height="' + spec.h + '" viewBox="0 0 ' + spec.w + ' ' + spec.h + '"' +
-      ' style="left:' + spec.x + 'px;top:' + spec.y + 'px;transform:rotate(' + spec.rot + 'deg);opacity:' + spec.ink + '"' +
+      ' style="' + (spec.pos || 'left:' + spec.x + 'px;top:' + spec.y + 'px') + ';transform:rotate(' + spec.rot + 'deg);opacity:' + spec.ink + '"' +
       ' role="img" aria-label="' + s.city + ', ' + s.date + '">' +
       '<g fill="none" stroke="currentColor">' + spec.shape + '</g>' +
       '<g transform="translate(' + (cx - 7) + ' ' + spec.iconY + ') scale(.58)" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></g>' +
@@ -487,26 +550,62 @@
     root.querySelector(".story-art svg").setAttribute("aria-label", D.companion.name);
   }
 
-  // Miles counter: before -> after over ~1.2s, replayed on every visit
-  var COUNT_MS = 1200;
+  // Earlier stamps around the edges of the mission passport page, one spot per collected stamp
+  var PAGE_SPOTS = [
+    { pos: "left:-14px;bottom:-10px", rot: 7 },
+    { pos: "left:16px;top:18px", rot: -5 },
+    { pos: "right:14px;bottom:24px", rot: 4 }
+  ];
+  var CONFETTI = 16;
+
+  // Stamp thumps in (220ms), then the miles counter runs ~1s and lands exactly on miles.after; replayed on every visit
+  var THUMP_MS = 220, COUNT_MS = 1000;
   var countFrame = 0;
   function renderMission() {
     var root = document.querySelector('[data-screen="mission"]');
     bind(root);
-    root.querySelector(".reward-badge").textContent = "+" + fmt(D.miles.missionReward) + " " + D.labels.milesUnit;
     boardingDone = true;
+
+    root.querySelector(".badge-stamp").setAttribute("aria-label", passMission.title);
+    root.querySelector(".badge-title textPath").textContent = passMission.title.toUpperCase();
+    root.querySelector(".badge-route textPath").textContent = D.trip.from + " → " + D.trip.to;
+    root.querySelector(".badge-code").textContent = D.trip.missionCode;
+    root.querySelector(".pip").setAttribute("aria-label", D.companion.name);
+    root.querySelector(".reward-text").textContent = "+" + fmt(D.miles.missionReward) + " " + D.labels.milesUnit;
+
+    var html = "", n = 0;
+    D.stamps.forEach(function (s) {
+      if (!s.collected) return;
+      html += stampSvg(s, Object.assign({}, STAMPS[n % STAMPS.length], PAGE_SPOTS[n % PAGE_SPOTS.length]));
+      n++;
+    });
+    root.querySelector(".page-stamps").innerHTML = html;
+
+    // Confetti fans up and out from the reward chip
+    var burst = root.querySelector(".confetti");
+    if (!burst.childElementCount) {
+      for (var i = 0; i < CONFETTI; i++) {
+        var a = (-165 + i * 150 / (CONFETTI - 1)) * Math.PI / 180, d = 48 + (i % 4) * 16;
+        var bit = el("i");
+        bit.style.cssText = "--dx:" + Math.round(Math.cos(a) * d * 1.8) + "px;--dy:" + Math.round(Math.sin(a) * d) + "px;--r:" + (i * 67 % 360) + "deg";
+        burst.appendChild(bit);
+      }
+    }
 
     var from = D.miles.before, to = D.miles.after;
     var count = root.querySelector(".miles-count");
     function paint(v) { count.textContent = fmt(v); setMiles(root, v); }
 
     cancelAnimationFrame(countFrame);
-    paint(from);
+    root.classList.remove("play");
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { paint(to); return; }
+    paint(from);
+    void root.offsetWidth;
+    root.classList.add("play");
     var start = null;
     function step(t) {
       if (start === null) start = t;
-      var p = Math.min((t - start) / COUNT_MS, 1);
+      var p = Math.min(Math.max(t - start - THUMP_MS, 0) / COUNT_MS, 1);
       var eased = 1 - Math.pow(1 - p, 3);
       paint(p < 1 ? Math.round(from + (to - from) * eased) : to);
       if (p < 1) countFrame = requestAnimationFrame(step);

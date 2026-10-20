@@ -45,6 +45,7 @@ window.DATA = {
     milesUnit: "miles",
     back: "Back",
     done: "Done",
+    backToTrip: "Back to my trip",
     missionComplete: "Boarding mission complete!",
     tripTitle: "Mei's trip",
     startMission: "Start mission",
